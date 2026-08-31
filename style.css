@@ -448,3 +448,303 @@ body:after{
     animation:none!important;
   }
 }
+
+
+/* =========================================================
+   HUMBLE STUDIO — PERFORMANCE + MOBILE FIX
+   ========================================================= */
+
+/* Keep animations on desktop, but make expensive layers compositor-friendly. */
+.marquee-track,
+.hero:before,
+.hero:after,
+.art-card,
+.art-shadow,
+.about-logo,
+.footer:after,
+.page-transition:after {
+  will-change: transform;
+}
+
+.tool-card,
+.tool-thumb > img,
+.reveal {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* The page transition must never block browser history restoration. */
+.page-transition {
+  visibility:visible;
+}
+.page-transition.is-leaving {
+  visibility:visible;
+}
+.page-transition:not(.is-leaving) {
+  pointer-events:none;
+}
+
+/* Phones/tablets: preserve the visual style but remove the most expensive effects. */
+@media (max-width: 900px) {
+  /* SVG turbulence/noise is surprisingly expensive on mobile GPUs. */
+  body:before {
+    display:none;
+  }
+
+  /* Keep the moving grid, but don't animate a full-screen fixed texture. */
+  body:after {
+    animation:none;
+    opacity:.12;
+  }
+
+  .site-header {
+    position:sticky;
+  }
+
+  .hero {
+    min-height:auto;
+    overflow:hidden;
+  }
+
+  .hero:before {
+    animation-duration:40s;
+  }
+
+  .hero:after {
+    animation-duration:14s;
+  }
+
+  .art-card,
+  .art-shadow,
+  .about-logo {
+    animation-duration:8s;
+  }
+
+  .sticker,
+  .hero-note,
+  .art-label,
+  .float-shape,
+  .spark {
+    animation-duration:6s;
+  }
+
+  /* Don't animate expensive shine/border effects on touch screens. */
+  .tool-card:before {
+    display:none;
+  }
+
+  .tool-card .tool-thumb:after {
+    display:none;
+  }
+
+  .tool-card:hover,
+  .tool-card:hover .tool-info h3,
+  .tool-card:hover .tool-thumb > img,
+  .tool-card:hover .thumb-overlay {
+    transform:none;
+  }
+
+  .tool-card {
+    transform:none !important;
+    transition:transform .25s ease, box-shadow .25s ease;
+  }
+
+  .tool-card:active {
+    transform:translate(2px,2px) !important;
+    box-shadow:7px 7px #111;
+  }
+
+  .tool-thumb > img {
+    transition:transform .35s ease;
+  }
+
+  .tool-card:active .tool-thumb > img {
+    transform:scale(1.025);
+  }
+
+  /* On touch devices the CTA is always readable instead of waiting for hover. */
+  .tool-card .thumb-overlay {
+    transform:translateY(0);
+  }
+
+  .tools-grid {
+    gap:22px;
+  }
+
+  .tool-card,
+  .coming-card,
+  .social-card {
+    contain:layout paint;
+  }
+
+  .marquee-track {
+    animation-duration:18s;
+  }
+
+  .marquee-group {
+    min-width:100vw;
+  }
+
+  .page-transition:after {
+    width:90vw;
+    height:90vw;
+    animation-duration:10s;
+  }
+
+  .transition-card {
+    transform:scale(.94);
+  }
+
+  .page-transition.is-leaving .transition-card {
+    transform:scale(1);
+  }
+}
+
+/* Smaller phones: prevent the hero from becoming an oversized/slow canvas. */
+@media (max-width: 560px) {
+  .site-header {
+    height:64px;
+    padding:0 14px;
+  }
+
+  .brand img {
+    width:38px;
+    height:38px;
+  }
+
+  .brand {
+    font-size:16px;
+  }
+
+  .brand small {
+    font-size:9px;
+    margin-top:3px;
+  }
+
+  .mobile-menu {
+    top:64px;
+  }
+
+  .hero {
+    padding:48px 18px 60px;
+    gap:10px;
+  }
+
+  .hero h1 {
+    font-size:clamp(58px,17vw,92px);
+    letter-spacing:-3px;
+    margin:24px 0 24px;
+  }
+
+  .hero-copy > p {
+    font-size:15px;
+    line-height:1.5;
+  }
+
+  .hero-art {
+    height:310px;
+    margin-top:8px;
+  }
+
+  .art-card {
+    width:min(72vw,300px);
+    box-shadow:10px 10px #111;
+  }
+
+  .art-shadow {
+    width:min(68vw,285px);
+  }
+
+  .sticker.pink {
+    top:2%;
+    left:1%;
+  }
+
+  .sticker.yellow {
+    top:8%;
+    right:0;
+  }
+
+  .hero-note {
+    top:13%;
+    right:2%;
+  }
+
+  .shape-circle {
+    top:40%;
+    right:7%;
+  }
+
+  .shape-arrow {
+    top:52%;
+    left:0;
+    font-size:32px;
+  }
+
+  .shape-cross {
+    left:4%;
+    bottom:4%;
+    font-size:34px;
+  }
+
+  .spark {
+    font-size:28px;
+  }
+
+  .section {
+    padding:72px 18px;
+  }
+
+  .section-title h2 {
+    font-size:clamp(54px,15vw,82px);
+  }
+
+  .tool-thumb {
+    height:230px;
+  }
+
+  .tool-info {
+    padding:20px 18px 23px;
+  }
+
+  .tool-info h3 {
+    font-size:26px;
+    line-height:1;
+  }
+
+  .tool-info p {
+    font-size:14px;
+  }
+
+  .coming-card {
+    min-height:270px;
+  }
+
+  .about-copy h2 {
+    font-size:clamp(58px,16vw,90px);
+  }
+
+  .about-logo {
+    padding:28px;
+  }
+
+  .social-card {
+    min-height:145px;
+  }
+
+  .footer {
+    padding:25px 18px;
+  }
+}
+
+/* Respect the user's system setting and remove motion cleanly. */
+@media (prefers-reduced-motion: reduce) {
+  .page-transition {
+    clip-path:inset(0);
+    opacity:0;
+  }
+
+  .page-transition.is-leaving {
+    opacity:1;
+  }
+}
