@@ -1,3 +1,3 @@
 # HUMBLE STUDIO
 
-* https://github.com/humblelyy/HumbleStudio/ *
+* * https://github.com/humblelyy/HumbleStudio/ *
