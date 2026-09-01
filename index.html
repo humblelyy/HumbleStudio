@@ -1,23 +1,18 @@
 <!doctype html>
 <html lang="en">
-
 <head>
-
   <meta charset="utf-8">
 
   <meta
     name="viewport"
-    content="width=device-width, initial-scale=1"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <meta
-    name="theme-color"
-    content="#080808"
-  >
+  <meta name="theme-color" content="#f4efe7">
 
   <meta
     name="description"
-    content="HUMBLE STUDIO — tools and utilities for editors and creators."
+    content="HUMBLE STUDIO — useful tools and utilities for editors and creators."
   >
 
   <link
@@ -26,31 +21,23 @@
   >
 
   <link
+    rel="preload"
+    as="image"
+    href="assets/logo/humble-logo-high.png"
+  >
+
+  <link
     rel="stylesheet"
     href="style.css"
   >
 
   <title>HUMBLE STUDIO</title>
-
 </head>
-
 
 <body>
 
-
   <!-- =====================================================
-       SCROLL PROGRESS
-  ====================================================== -->
-
-  <div
-    class="scroll-progress"
-    aria-hidden="true"
-  ></div>
-
-
-
-  <!-- =====================================================
-       PAGE / TOOL TRANSITION
+       PAGE TRANSITION
   ====================================================== -->
 
   <div
@@ -65,14 +52,31 @@
         alt=""
       >
 
-      <strong>HUMBLE</strong>
+      <div class="transition-text">
 
-      <span>OPENING TOOL</span>
+        <strong id="transition-title">
+          HUMBLE TOOL
+        </strong>
+
+        <span id="transition-label">
+          OPENING
+        </span>
+
+      </div>
 
     </div>
 
   </div>
 
+
+  <!-- =====================================================
+       SCROLL PROGRESS
+  ====================================================== -->
+
+  <div
+    class="scroll-progress"
+    aria-hidden="true"
+  ></div>
 
 
   <!-- =====================================================
@@ -139,7 +143,6 @@
   </header>
 
 
-
   <!-- =====================================================
        MOBILE MENU
   ====================================================== -->
@@ -165,9 +168,7 @@
   </div>
 
 
-
   <main>
-
 
     <!-- ===================================================
          HERO
@@ -178,8 +179,7 @@
       class="hero"
     >
 
-
-      <!-- FLOATING STICKERS -->
+      <!-- Decorative elements -->
 
       <div class="sticker pink">
         BUILT FOR
@@ -187,6 +187,11 @@
         EDITORS
       </div>
 
+      <div class="sticker cyan">
+        MADE FOR
+        <br>
+        CREATORS
+      </div>
 
       <div class="sticker yellow">
         STAY
@@ -195,15 +200,12 @@
       </div>
 
 
-      <!-- FLOATING SHAPES -->
-
       <div
         class="spark spark-a"
         aria-hidden="true"
       >
         ✦
       </div>
-
 
       <div
         class="spark spark-b"
@@ -218,12 +220,10 @@
         aria-hidden="true"
       ></div>
 
-
       <div
         class="float-shape shape-square"
         aria-hidden="true"
       ></div>
-
 
       <div
         class="float-shape shape-cross"
@@ -231,7 +231,6 @@
       >
         +
       </div>
-
 
       <div
         class="float-shape shape-arrow"
@@ -241,18 +240,7 @@
       </div>
 
 
-      <div
-        class="hero-note"
-        aria-hidden="true"
-      >
-        MADE FOR
-        <br>
-        CREATORS
-      </div>
-
-
-
-      <!-- HERO TEXT -->
+      <!-- Hero content -->
 
       <div class="hero-copy reveal">
 
@@ -293,74 +281,87 @@
       </div>
 
 
-
-      <!-- HERO ART -->
+      <!-- Hero artwork -->
 
       <div class="hero-art reveal">
 
-        <div class="art-shadow"></div>
+        <div class="art-back"></div>
 
+        <div class="art-shadow"></div>
 
         <div class="art-card">
 
           <img
             src="assets/logo/humble-logo-high.png"
-            alt="Humble Studio"
+            alt="HUMBLE"
           >
 
         </div>
 
-
         <div class="art-label">
-
           HUMBLE
           <br>
           STUDIO
-
         </div>
 
+      </div>
+
+
+      <!-- Background decoration -->
+
+      <div
+        class="hero-orbit"
+        aria-hidden="true"
+      ></div>
+
+      <div
+        class="hero-plus"
+        aria-hidden="true"
+      >
+        +
       </div>
 
     </section>
 
 
-
     <!-- ===================================================
-         HUMBLE BANNER INFINITE MARQUEE
-         
-         IMPORTANT:
-         ONLY THE HUMBLE BANNER IMAGE IS USED HERE.
+         INFINITE HUMBLE MARQUEE
     ==================================================== -->
 
-    <section
+    <div
       class="marquee"
-      aria-label="Humble Studio banner"
+      aria-label="Humble"
     >
 
       <div class="marquee-track">
 
-
         <div class="marquee-group">
 
           <img
-            src="assets/logo/humble-banner.png"
-            alt="Humble Studio"
+            src="assets/logo/humble-marquee.png"
+            alt="HUMBLE"
           >
 
           <img
-            src="assets/logo/humble-banner.png"
+            src="assets/logo/humble-marquee.png"
             alt=""
             aria-hidden="true"
           >
 
           <img
-            src="assets/logo/humble-banner.png"
+            src="assets/logo/humble-marquee.png"
             alt=""
             aria-hidden="true"
           >
 
           <img
-            src="assets/logo/humble-banner.png"
+            src="assets/logo/humble-marquee.png"
+            alt=""
+            aria-hidden="true"
+          >
+
+          <img
+            src="assets/logo/humble-marquee.png"
             alt=""
             aria-hidden="true"
           >
@@ -374,32 +375,35 @@
         >
 
           <img
-            src="assets/logo/humble-banner.png"
+            src="assets/logo/humble-marquee.png"
             alt=""
           >
 
           <img
-            src="assets/logo/humble-banner.png"
+            src="assets/logo/humble-marquee.png"
             alt=""
           >
 
           <img
-            src="assets/logo/humble-banner.png"
+            src="assets/logo/humble-marquee.png"
             alt=""
           >
 
           <img
-            src="assets/logo/humble-banner.png"
+            src="assets/logo/humble-marquee.png"
+            alt=""
+          >
+
+          <img
+            src="assets/logo/humble-marquee.png"
             alt=""
           >
 
         </div>
 
-
       </div>
 
-    </section>
-
+    </div>
 
 
     <!-- ===================================================
@@ -411,26 +415,22 @@
       class="section tools-section"
     >
 
-
       <div class="section-title reveal">
 
         <div class="eyebrow">
           WHAT WE BUILD
         </div>
 
-
         <h2>
           OUR
           <em>TOOLS</em>
         </h2>
 
-
         <p>
-          Pick a tool to open its page.
+          Useful things for editors and creators.
         </p>
 
       </div>
-
 
 
       <div
@@ -449,20 +449,15 @@
       </div>
 
 
-
-      <!-- =================================================
-           TOOL GRID
-      ================================================== -->
-
       <div class="tools-grid">
 
 
-        <!-- ===============================================
+        <!-- =================================================
              HUMBLE STUDIO TOOL
-        ================================================ -->
+        ================================================== -->
 
         <a
-          class="tool-card pink-card reveal tool-link"
+          class="tool-card pink-card reveal"
           href="https://humblelyy.github.io/HumbleStudioTool/"
           data-tool="Humble Studio Tool"
         >
@@ -471,7 +466,8 @@
 
             <img
               src="assets/tools/humble-studio-tool.png"
-              alt="Humble Studio Tool thumbnail"
+              alt="Humble Studio Tool"
+              loading="lazy"
             >
 
             <div class="thumb-overlay">
@@ -495,18 +491,15 @@
               01 / TOOL
             </small>
 
-
             <h3>
               Humble Studio Tool
             </h3>
-
 
             <p>
               Discord RPC, editing timer, streaks,
               community features and Adobe workflow
               utilities.
             </p>
-
 
             <strong>
               OPEN HUMBLE STUDIO TOOL
@@ -518,13 +511,12 @@
         </a>
 
 
-
-        <!-- ===============================================
+        <!-- =================================================
              HUMBLE AE DOWNGRADER
-        ================================================ -->
+        ================================================== -->
 
         <a
-          class="tool-card cyan-card reveal tool-link"
+          class="tool-card cyan-card reveal"
           href="https://humblelyy.github.io/HUMBLE-ae-Downgrader/"
           data-tool="Humble AE Downgrader"
         >
@@ -533,7 +525,8 @@
 
             <img
               src="assets/tools/humble-ae-downgrader.png"
-              alt="Humble AE Downgrader thumbnail"
+              alt="Humble AE Downgrader"
+              loading="lazy"
             >
 
             <div class="thumb-overlay">
@@ -557,21 +550,18 @@
               02 / TOOL
             </small>
 
-
             <h3>
               Humble AE Downgrader
             </h3>
 
-
             <p>
-              The After Effects project downgrade
-              tool for converting projects to
-              compatible versions.
+              Convert After Effects projects to
+              older versions with the Humble AE
+              Downgrader.
             </p>
 
-
             <strong>
-              OPEN HUMBLE AE DOWNGRADER
+              OPEN AE DOWNGRADER
               <b>↗</b>
             </strong>
 
@@ -580,10 +570,9 @@
         </a>
 
 
-
-        <!-- ===============================================
-             MORE TOOLS
-        ================================================ -->
+        <!-- =================================================
+             MORE
+        ================================================== -->
 
         <div class="coming-card reveal">
 
@@ -591,13 +580,11 @@
             03 / NEXT
           </small>
 
-
           <strong>
             MORE
             <br>
             SOON.
           </strong>
-
 
           <span>
             Something useful is cooking.
@@ -605,11 +592,9 @@
 
         </div>
 
-
       </div>
 
     </section>
-
 
 
     <!-- ===================================================
@@ -621,20 +606,17 @@
       class="section about-section"
     >
 
-
       <div class="about-copy reveal">
 
         <div class="eyebrow">
           A LITTLE ABOUT HUMBLE
         </div>
 
-
         <h2>
           KEEP IT
           <br>
           <em>HUMBLE.</em>
         </h2>
-
 
         <p>
           HUMBLE STUDIO is a small creative space
@@ -647,18 +629,17 @@
       </div>
 
 
-
       <div class="about-logo reveal">
 
         <img
           src="assets/logo/humble-logo-high.png"
-          alt="Humble Studio logo"
+          alt="Humble Studio"
+          loading="lazy"
         >
 
       </div>
 
     </section>
-
 
 
     <!-- ===================================================
@@ -670,13 +651,11 @@
       class="section contact-section"
     >
 
-
       <div class="section-title reveal">
 
         <div class="eyebrow">
           FIND HUMBLE
         </div>
-
 
         <h2>
           CONTACT
@@ -687,11 +666,8 @@
       </div>
 
 
-
       <div class="social-grid">
 
-
-        <!-- EMAIL -->
 
         <a
           class="social-card yellow reveal"
@@ -717,9 +693,6 @@
 
         </a>
 
-
-
-        <!-- DISCORD -->
 
         <a
           class="social-card purple reveal"
@@ -748,9 +721,6 @@
         </a>
 
 
-
-        <!-- YOUTUBE -->
-
         <a
           class="social-card red reveal"
           href="https://www.youtube.com/@humbleae"
@@ -777,9 +747,6 @@
 
         </a>
 
-
-
-        <!-- INSTAGRAM -->
 
         <a
           class="social-card pink reveal"
@@ -808,9 +775,6 @@
         </a>
 
 
-
-        <!-- SPOTIFY -->
-
         <a
           class="social-card green reveal"
           href="https://open.spotify.com/user/31yb6y2acu2gaqniklh7pbvfpvcy"
@@ -838,9 +802,6 @@
         </a>
 
 
-
-        <!-- GITHUB -->
-
         <a
           class="social-card white reveal"
           href="https://github.com/humblelyy"
@@ -867,13 +828,11 @@
 
         </a>
 
-
       </div>
 
     </section>
 
   </main>
-
 
 
   <!-- =====================================================
@@ -895,22 +854,18 @@
 
     </div>
 
-
     <span>
       © 2026 HUMBLE STUDIO
     </span>
 
-
     <strong>
-     ♥ BUILT BY @_humble.y_ 
+      BUILT WITH CHAOS ♥
     </strong>
 
   </footer>
 
 
-
   <script src="script.js"></script>
 
 </body>
-
 </html>
