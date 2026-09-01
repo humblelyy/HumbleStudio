@@ -1,171 +1,481 @@
-const $ = (s, p = document) => p.querySelector(s);
-const $$ = (s, p = document) => [...p.querySelectorAll(s)];
+/* =========================================================
+   HUMBLE STUDIO
+   Lightweight / mobile-friendly JavaScript
+========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
-
-  // Reveal-on-scroll. Keep the observer lightweight and avoid per-element delays on phones.
-  const reveal = $$(".reveal");
-
-  if ("IntersectionObserver" in window && !reduceMotion) {
-    const io = new IntersectionObserver((entries, observer) => {
-      entries.forEach(entry => {
-        if (!entry.isIntersecting) return;
-        entry.target.classList.add("visible");
-        observer.unobserve(entry.target);
-      });
-    }, {
-      threshold: 0.08,
-      rootMargin: "0px 0px -30px 0px"
-    });
-
-    reveal.forEach((el, i) => {
-      if (!coarsePointer) {
-        el.style.transitionDelay = `${Math.min(i * 35, 180)}ms`;
-      }
-      io.observe(el);
-    });
-  } else {
-    reveal.forEach(el => el.classList.add("visible"));
-  }
-
-  // Mobile menu.
-  const menuBtn = $(".menu-btn");
-  const menu = $(".mobile-menu");
-
-  if (menuBtn && menu) {
-    const closeMenu = () => {
-      menu.classList.remove("open");
-      menuBtn.setAttribute("aria-expanded", "false");
-    };
-
-    menuBtn.addEventListener("click", () => {
-      const open = menu.classList.toggle("open");
-      menuBtn.setAttribute("aria-expanded", String(open));
-    });
-
-    $$(".mobile-menu a").forEach(a => {
-      a.addEventListener("click", closeMenu);
-    });
-  }
-
-  // Tool page transition.
-  const transition = $(".page-transition");
-
-  const resetPageTransition = () => {
-    if (!transition) return;
-    transition.classList.remove("is-leaving", "is-entering");
-    transition.setAttribute("aria-hidden", "true");
-  };
-
-  const openTool = (card, event) => {
-    if (!transition) return;
-
-    // Let browser shortcuts / new-tab gestures work normally.
-    if (
-      event.defaultPrevented ||
-      event.button !== 0 ||
-      event.ctrlKey ||
-      event.metaKey ||
-      event.shiftKey ||
-      event.altKey
-    ) return;
-
-    const href = card.href;
-    if (!href) return;
-
-    event.preventDefault();
-
-    const title = card.dataset.tool || "Humble Studio Tool";
-    const label = $(".transition-card span");
-
-    if (label) {
-      label.textContent = `OPENING ${title.toUpperCase()}...`;
-    }
-
-    transition.setAttribute("aria-hidden", "false");
-    transition.classList.add("is-leaving");
-
-    // Give the animation enough time to be visible without making navigation feel slow.
-    window.setTimeout(() => {
-      window.location.assign(href);
-    }, 420);
-  };
-
-  $$(".tool-card[href]").forEach(card => {
-    card.addEventListener("click", event => openTool(card, event));
-  });
-
-  // IMPORTANT:
-  // Safari/Chrome/Firefox can restore this page from the back-forward cache.
-  // The old .is-leaving class would otherwise remain visible after pressing Back.
-  window.addEventListener("pageshow", resetPageTransition);
-  window.addEventListener("popstate", resetPageTransition);
-  window.addEventListener("pagehide", () => {
-    // Do not keep the overlay in the cached page.
-    resetPageTransition();
-  });
-
-  // Reset after browser restores a page from history.
-  resetPageTransition();
-});
-
-// Scroll progress bar — throttled with requestAnimationFrame for smoother scrolling.
 (() => {
-  const bar = document.querySelector(".scroll-progress");
-  if (!bar) return;
+
+  "use strict";
+
+
+  /* =======================================================
+     ELEMENTS
+  ======================================================== */
+
+  const menuButton =
+    document.querySelector(".menu-btn");
+
+  const mobileMenu =
+    document.querySelector(".mobile-menu");
+
+  const transition =
+    document.querySelector(".page-transition");
+
+  const progress =
+    document.querySelector(".scroll-progress");
+
+  const revealElements =
+    document.querySelectorAll(".reveal");
+
+  const toolLinks =
+    document.querySelectorAll(".tool-link");
+
+
+  /* =======================================================
+     MOBILE MENU
+  ======================================================== */
+
+  if (menuButton && mobileMenu) {
+
+    menuButton.addEventListener("click", () => {
+
+      const isOpen =
+        mobileMenu.classList.toggle("open");
+
+      menuButton.classList.toggle(
+        "active",
+        isOpen
+      );
+
+      menuButton.setAttribute(
+        "aria-expanded",
+        String(isOpen)
+      );
+
+      menuButton.setAttribute(
+        "aria-label",
+        isOpen
+          ? "Close menu"
+          : "Open menu"
+      );
+
+    });
+
+
+    /*
+      Close mobile menu when clicking a link.
+    */
+
+    mobileMenu
+      .querySelectorAll("a")
+      .forEach(link => {
+
+        link.addEventListener(
+          "click",
+          () => {
+
+            mobileMenu.classList.remove(
+              "open"
+            );
+
+            menuButton.classList.remove(
+              "active"
+            );
+
+            menuButton.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+
+            menuButton.setAttribute(
+              "aria-label",
+              "Open menu"
+            );
+
+          }
+        );
+
+      });
+
+  }
+
+
+  /* =======================================================
+     REVEAL ANIMATIONS
+     IntersectionObserver is much lighter than
+     listening to scroll for every element.
+  ======================================================== */
+
+  const reduceMotion =
+    window.matchMedia(
+      "(prefers-reduced-motion: reduce)"
+    ).matches;
+
+
+  if (
+    reduceMotion ||
+    !("IntersectionObserver" in window)
+  ) {
+
+    revealElements.forEach(element => {
+      element.classList.add("visible");
+    });
+
+  } else {
+
+    const observer =
+      new IntersectionObserver(
+        entries => {
+
+          entries.forEach(entry => {
+
+            if (!entry.isIntersecting) {
+              return;
+            }
+
+            entry.target.classList.add(
+              "visible"
+            );
+
+            observer.unobserve(
+              entry.target
+            );
+
+          });
+
+        },
+        {
+          root: null,
+          rootMargin: "0px 0px -60px 0px",
+          threshold: 0.08
+        }
+      );
+
+
+    revealElements.forEach(element => {
+      observer.observe(element);
+    });
+
+  }
+
+
+  /* =======================================================
+     SCROLL PROGRESS
+     
+     Uses requestAnimationFrame so the browser
+     doesn't get hammered by scroll events.
+  ======================================================== */
 
   let ticking = false;
 
-  const update = () => {
-    const max = document.documentElement.scrollHeight - window.innerHeight;
-    const progress = max > 0
-      ? Math.min(100, Math.max(0, (window.scrollY / max) * 100))
-      : 0;
 
-    bar.style.width = `${progress}%`;
-    ticking = false;
-  };
+  function updateProgress() {
 
-  const requestUpdate = () => {
-    if (ticking) return;
+    if (!progress) {
+      return;
+    }
+
+
+    const documentHeight =
+      document.documentElement.scrollHeight -
+      window.innerHeight;
+
+
+    if (documentHeight <= 0) {
+
+      progress.style.width = "0%";
+
+      return;
+
+    }
+
+
+    const amount =
+      (window.scrollY / documentHeight) * 100;
+
+
+    progress.style.width =
+      `${Math.min(100, Math.max(0, amount))}%`;
+
+  }
+
+
+  function requestProgressUpdate() {
+
+    if (ticking) {
+      return;
+    }
+
+
     ticking = true;
-    requestAnimationFrame(update);
-  };
 
-  window.addEventListener("scroll", requestUpdate, { passive: true });
-  window.addEventListener("resize", requestUpdate, { passive: true });
-  update();
-})();
 
-// Small 3D tilt only on desktop. Never attach pointermove handlers to touch devices.
-(() => {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (window.matchMedia("(pointer: coarse)").matches) return;
+    requestAnimationFrame(() => {
 
-  document.querySelectorAll(".tool-card").forEach(card => {
-    let raf = 0;
+      updateProgress();
 
-    card.addEventListener("pointermove", e => {
-      if (raf) return;
+      ticking = false;
 
-      raf = requestAnimationFrame(() => {
-        const r = card.getBoundingClientRect();
-        const x = (e.clientX - r.left) / r.width - 0.5;
-        const y = (e.clientY - r.top) / r.height - 0.5;
-
-        card.style.transform =
-          `perspective(900px) rotateX(${(-y * 3).toFixed(2)}deg) rotateY(${(x * 3).toFixed(2)}deg) translateY(-5px)`;
-
-        raf = 0;
-      });
-    }, { passive: true });
-
-    card.addEventListener("pointerleave", () => {
-      if (raf) cancelAnimationFrame(raf);
-      raf = 0;
-      card.style.transform = "";
     });
-  });
+
+  }
+
+
+  window.addEventListener(
+    "scroll",
+    requestProgressUpdate,
+    {
+      passive: true
+    }
+  );
+
+
+  window.addEventListener(
+    "resize",
+    requestProgressUpdate,
+    {
+      passive: true
+    }
+  );
+
+
+  updateProgress();
+
+
+  /* =======================================================
+     TOOL PAGE TRANSITIONS
+  ======================================================== */
+
+  let navigating = false;
+
+
+  if (transition) {
+
+    toolLinks.forEach(link => {
+
+      link.addEventListener(
+        "click",
+        event => {
+
+          /*
+            Don't interfere with:
+            - Ctrl click
+            - Cmd click
+            - middle mouse
+            - Shift click
+          */
+
+          if (
+            event.ctrlKey ||
+            event.metaKey ||
+            event.shiftKey ||
+            event.button !== 0
+          ) {
+
+            return;
+
+          }
+
+
+          const destination =
+            link.href;
+
+
+          if (!destination) {
+            return;
+          }
+
+
+          /*
+            Only animate normal external
+            navigation.
+          */
+
+          event.preventDefault();
+
+
+          if (navigating) {
+            return;
+          }
+
+
+          navigating = true;
+
+
+          const toolName =
+            link.dataset.tool ||
+            "HUMBLE TOOL";
+
+
+          const transitionName =
+            transition.querySelector(
+              ".transition-card strong"
+            );
+
+
+          const transitionLabel =
+            transition.querySelector(
+              ".transition-card span"
+            );
+
+
+          if (transitionName) {
+
+            transitionName.textContent =
+              toolName
+                .replace(
+                  "Humble ",
+                  "HUMBLE "
+                )
+                .toUpperCase();
+
+          }
+
+
+          if (transitionLabel) {
+
+            transitionLabel.textContent =
+              "OPENING TOOL";
+
+          }
+
+
+          transition.classList.add(
+            "active"
+          );
+
+
+          /*
+            Small delay gives the animation
+            enough time to actually appear.
+          */
+
+          window.setTimeout(() => {
+
+            window.location.href =
+              destination;
+
+          }, 350);
+
+        }
+      );
+
+    });
+
+
+    /*
+      IMPORTANT:
+      If the user presses Back on mobile
+      or desktop, never leave the transition
+      overlay stuck on screen.
+    */
+
+    window.addEventListener(
+      "pageshow",
+      () => {
+
+        transition.classList.remove(
+          "active"
+        );
+
+        navigating = false;
+
+      }
+    );
+
+
+    window.addEventListener(
+      "pagehide",
+      () => {
+
+        transition.classList.remove(
+          "active"
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =======================================================
+     FIX HASH NAVIGATION
+  ======================================================== */
+
+  document
+    .querySelectorAll(
+      'a[href^="#"]'
+    )
+    .forEach(link => {
+
+      link.addEventListener(
+        "click",
+        () => {
+
+          /*
+            Closing the mobile menu is enough.
+            Browser handles the actual hash.
+          */
+
+          if (
+            mobileMenu &&
+            menuButton
+          ) {
+
+            mobileMenu.classList.remove(
+              "open"
+            );
+
+            menuButton.classList.remove(
+              "active"
+            );
+
+            menuButton.setAttribute(
+              "aria-expanded",
+              "false"
+            );
+
+          }
+
+        }
+      );
+
+    });
+
+
+  /* =======================================================
+     PREVENT DOUBLE TAP ZOOM ON BUTTON-LIKE UI
+     ======================================================== */
+
+  document.addEventListener(
+    "touchstart",
+    () => {},
+    {
+      passive: true
+    }
+  );
+
+
+  /* =======================================================
+     CLEAN UP TRANSITION WHEN PAGE IS RESTORED
+     FROM BROWSER CACHE
+  ======================================================== */
+
+  if (transition) {
+
+    window.addEventListener(
+      "popstate",
+      () => {
+
+        transition.classList.remove(
+          "active"
+        );
+
+        navigating = false;
+
+      }
+    );
+
+  }
+
 })();
