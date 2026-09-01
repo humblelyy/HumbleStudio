@@ -1,8 +1,3 @@
-/* =========================================================
-   HUMBLE STUDIO
-   Lightweight / mobile-friendly JavaScript
-========================================================= */
-
 (() => {
 
   "use strict";
@@ -15,60 +10,95 @@
   const menuButton =
     document.querySelector(".menu-btn");
 
+
   const mobileMenu =
     document.querySelector(".mobile-menu");
+
 
   const transition =
     document.querySelector(".page-transition");
 
+
+  const transitionTitle =
+    transition?.querySelector(
+      ".transition-card strong"
+    );
+
+
+  const transitionLabel =
+    transition?.querySelector(
+      ".transition-card span"
+    );
+
+
   const progress =
     document.querySelector(".scroll-progress");
+
 
   const revealElements =
     document.querySelectorAll(".reveal");
 
+
   const toolLinks =
     document.querySelectorAll(".tool-link");
+
+
+  let navigating = false;
+
+  let scrollTicking = false;
+
 
 
   /* =======================================================
      MOBILE MENU
   ======================================================== */
 
-  if (menuButton && mobileMenu) {
-
-    menuButton.addEventListener("click", () => {
-
-      const isOpen =
-        mobileMenu.classList.toggle("open");
-
-      menuButton.classList.toggle(
-        "active",
-        isOpen
-      );
-
-      menuButton.setAttribute(
-        "aria-expanded",
-        String(isOpen)
-      );
-
-      menuButton.setAttribute(
-        "aria-label",
-        isOpen
-          ? "Close menu"
-          : "Open menu"
-      );
-
-    });
-
-
-    /*
-      Close mobile menu when clicking a link.
-    */
-
+  if (
+    menuButton &&
     mobileMenu
-      .querySelectorAll("a")
-      .forEach(link => {
+  ) {
+
+    menuButton.addEventListener(
+      "click",
+      () => {
+
+        const isOpen =
+          mobileMenu.classList.toggle(
+            "open"
+          );
+
+
+        menuButton.classList.toggle(
+          "active",
+          isOpen
+        );
+
+
+        menuButton.setAttribute(
+          "aria-expanded",
+          String(isOpen)
+        );
+
+
+        menuButton.setAttribute(
+          "aria-label",
+          isOpen
+            ? "Close menu"
+            : "Open menu"
+        );
+
+      }
+    );
+
+
+    const mobileLinks =
+      mobileMenu.querySelectorAll(
+        "a"
+      );
+
+
+    mobileLinks.forEach(
+      link => {
 
         link.addEventListener(
           "click",
@@ -78,96 +108,110 @@
               "open"
             );
 
+
             menuButton.classList.remove(
               "active"
             );
+
 
             menuButton.setAttribute(
               "aria-expanded",
               "false"
             );
 
-            menuButton.setAttribute(
-              "aria-label",
-              "Open menu"
-            );
-
           }
         );
 
-      });
+      }
+    );
 
   }
 
 
+
   /* =======================================================
      REVEAL ANIMATIONS
-     IntersectionObserver is much lighter than
-     listening to scroll for every element.
   ======================================================== */
 
-  const reduceMotion =
+  const reducedMotion =
     window.matchMedia(
       "(prefers-reduced-motion: reduce)"
     ).matches;
 
 
   if (
-    reduceMotion ||
+    reducedMotion ||
     !("IntersectionObserver" in window)
   ) {
 
-    revealElements.forEach(element => {
-      element.classList.add("visible");
-    });
+    revealElements.forEach(
+      element => {
+
+        element.classList.add(
+          "visible"
+        );
+
+      }
+    );
 
   } else {
 
-    const observer =
+    const revealObserver =
       new IntersectionObserver(
         entries => {
 
-          entries.forEach(entry => {
+          entries.forEach(
+            entry => {
 
-            if (!entry.isIntersecting) {
-              return;
+              if (
+                !entry.isIntersecting
+              ) {
+                return;
+              }
+
+
+              entry.target.classList.add(
+                "visible"
+              );
+
+
+              revealObserver.unobserve(
+                entry.target
+              );
+
             }
-
-            entry.target.classList.add(
-              "visible"
-            );
-
-            observer.unobserve(
-              entry.target
-            );
-
-          });
+          );
 
         },
         {
           root: null,
-          rootMargin: "0px 0px -60px 0px",
-          threshold: 0.08
+
+          rootMargin:
+            "0px 0px -50px 0px",
+
+          threshold:
+            0.08
         }
       );
 
 
-    revealElements.forEach(element => {
-      observer.observe(element);
-    });
+    revealElements.forEach(
+      element => {
+
+        revealObserver.observe(
+          element
+        );
+
+      }
+    );
 
   }
 
 
+
   /* =======================================================
      SCROLL PROGRESS
-     
-     Uses requestAnimationFrame so the browser
-     doesn't get hammered by scroll events.
   ======================================================== */
-
-  let ticking = false;
-
 
   function updateProgress() {
 
@@ -177,46 +221,76 @@
 
 
     const documentHeight =
-      document.documentElement.scrollHeight -
+      document.documentElement.scrollHeight;
+
+
+    const windowHeight =
       window.innerHeight;
 
 
-    if (documentHeight <= 0) {
+    const maxScroll =
+      documentHeight -
+      windowHeight;
 
-      progress.style.width = "0%";
+
+    if (
+      maxScroll <= 0
+    ) {
+
+      progress.style.width =
+        "0%";
 
       return;
 
     }
 
 
-    const amount =
-      (window.scrollY / documentHeight) * 100;
+    const currentScroll =
+      window.scrollY;
+
+
+    const percentage =
+      (
+        currentScroll /
+        maxScroll
+      ) * 100;
+
+
+    const safePercentage =
+      Math.min(
+        100,
+        Math.max(
+          0,
+          percentage
+        )
+      );
 
 
     progress.style.width =
-      `${Math.min(100, Math.max(0, amount))}%`;
+      `${safePercentage}%`;
 
   }
 
 
   function requestProgressUpdate() {
 
-    if (ticking) {
+    if (scrollTicking) {
       return;
     }
 
 
-    ticking = true;
+    scrollTicking = true;
 
 
-    requestAnimationFrame(() => {
+    requestAnimationFrame(
+      () => {
 
-      updateProgress();
+        updateProgress();
 
-      ticking = false;
+        scrollTicking = false;
 
-    });
+      }
+    );
 
   }
 
@@ -242,34 +316,35 @@
   updateProgress();
 
 
+
   /* =======================================================
      TOOL PAGE TRANSITIONS
   ======================================================== */
 
-  let navigating = false;
-
-
-  if (transition) {
-
-    toolLinks.forEach(link => {
+  toolLinks.forEach(
+    link => {
 
       link.addEventListener(
         "click",
         event => {
 
+
           /*
-            Don't interfere with:
-            - Ctrl click
-            - Cmd click
-            - middle mouse
-            - Shift click
+            Keep normal browser behaviour for:
+
+            Ctrl + click
+            Cmd + click
+            Shift + click
+            Alt + click
+            Middle mouse button
           */
 
           if (
+            event.button !== 0 ||
             event.ctrlKey ||
             event.metaKey ||
             event.shiftKey ||
-            event.button !== 0
+            event.altKey
           ) {
 
             return;
@@ -277,57 +352,49 @@
           }
 
 
-          const destination =
-            link.href;
-
-
-          if (!destination) {
+          if (!transition) {
             return;
           }
 
 
-          /*
-            Only animate normal external
-            navigation.
-          */
+          if (navigating) {
+
+            event.preventDefault();
+
+            return;
+
+          }
+
 
           event.preventDefault();
 
 
-          if (navigating) {
-            return;
-          }
-
-
           navigating = true;
 
+
+
+          /* ---------------------------------------------
+             DESTINATION
+          ---------------------------------------------- */
+
+          const destination =
+            link.href;
+
+
+
+          /* ---------------------------------------------
+             TOOL NAME
+          ---------------------------------------------- */
 
           const toolName =
             link.dataset.tool ||
             "HUMBLE TOOL";
 
 
-          const transitionName =
-            transition.querySelector(
-              ".transition-card strong"
-            );
+          if (transitionTitle) {
 
-
-          const transitionLabel =
-            transition.querySelector(
-              ".transition-card span"
-            );
-
-
-          if (transitionName) {
-
-            transitionName.textContent =
-              toolName
-                .replace(
-                  "Humble ",
-                  "HUMBLE "
-                )
-                .toUpperCase();
+            transitionTitle.textContent =
+              toolName.toUpperCase();
 
           }
 
@@ -340,142 +407,203 @@
           }
 
 
-          transition.classList.add(
-            "active"
+
+          /* ---------------------------------------------
+             CARD ANIMATION
+          ---------------------------------------------- */
+
+          link.classList.add(
+            "is-opening"
           );
 
 
-          /*
-            Small delay gives the animation
-            enough time to actually appear.
-          */
 
-          window.setTimeout(() => {
+          /* ---------------------------------------------
+             ACTIVATE SCREEN
+          ---------------------------------------------- */
 
-            window.location.href =
-              destination;
+          requestAnimationFrame(
+            () => {
 
-          }, 350);
+              transition.classList.add(
+                "active"
+              );
+
+            }
+          );
+
+
+
+          /* ---------------------------------------------
+             REDIRECT
+          ---------------------------------------------- */
+
+          window.setTimeout(
+            () => {
+
+              window.location.assign(
+                destination
+              );
+
+            },
+            850
+          );
 
         }
       );
 
-    });
+    }
+  );
 
 
-    /*
-      IMPORTANT:
-      If the user presses Back on mobile
-      or desktop, never leave the transition
-      overlay stuck on screen.
-    */
 
-    window.addEventListener(
-      "pageshow",
-      () => {
+  /* =======================================================
+     RESET TRANSITION
+     
+     Important for mobile/desktop Back button.
+  ======================================================== */
 
-        transition.classList.remove(
-          "active"
+  function resetTransition() {
+
+    if (transition) {
+
+      transition.classList.remove(
+        "active"
+      );
+
+      transition.setAttribute(
+        "aria-hidden",
+        "true"
+      );
+
+    }
+
+
+    toolLinks.forEach(
+      link => {
+
+        link.classList.remove(
+          "is-opening"
         );
-
-        navigating = false;
 
       }
     );
 
 
-    window.addEventListener(
-      "pagehide",
-      () => {
-
-        transition.classList.remove(
-          "active"
-        );
-
-      }
-    );
+    navigating = false;
 
   }
 
 
+
   /* =======================================================
-     FIX HASH NAVIGATION
+     PAGE SHOW
+     
+     Fixes browser back/forward cache.
+  ======================================================== */
+
+  window.addEventListener(
+    "pageshow",
+    () => {
+
+      resetTransition();
+
+      updateProgress();
+
+    }
+  );
+
+
+
+  /* =======================================================
+     PAGE HIDE
+  ======================================================== */
+
+  window.addEventListener(
+    "pagehide",
+    () => {
+
+      resetTransition();
+
+    }
+  );
+
+
+
+  /* =======================================================
+     POP STATE
+  ======================================================== */
+
+  window.addEventListener(
+    "popstate",
+    () => {
+
+      resetTransition();
+
+    }
+  );
+
+
+
+  /* =======================================================
+     HASH LINKS
   ======================================================== */
 
   document
     .querySelectorAll(
       'a[href^="#"]'
     )
-    .forEach(link => {
+    .forEach(
+      link => {
 
-      link.addEventListener(
-        "click",
-        () => {
+        link.addEventListener(
+          "click",
+          () => {
 
-          /*
-            Closing the mobile menu is enough.
-            Browser handles the actual hash.
-          */
+            if (
+              mobileMenu &&
+              menuButton
+            ) {
 
-          if (
-            mobileMenu &&
-            menuButton
-          ) {
+              mobileMenu.classList.remove(
+                "open"
+              );
 
-            mobileMenu.classList.remove(
-              "open"
-            );
 
-            menuButton.classList.remove(
-              "active"
-            );
+              menuButton.classList.remove(
+                "active"
+              );
 
-            menuButton.setAttribute(
-              "aria-expanded",
-              "false"
-            );
+
+              menuButton.setAttribute(
+                "aria-expanded",
+                "false"
+              );
+
+            }
 
           }
-
-        }
-      );
-
-    });
-
-
-  /* =======================================================
-     PREVENT DOUBLE TAP ZOOM ON BUTTON-LIKE UI
-     ======================================================== */
-
-  document.addEventListener(
-    "touchstart",
-    () => {},
-    {
-      passive: true
-    }
-  );
-
-
-  /* =======================================================
-     CLEAN UP TRANSITION WHEN PAGE IS RESTORED
-     FROM BROWSER CACHE
-  ======================================================== */
-
-  if (transition) {
-
-    window.addEventListener(
-      "popstate",
-      () => {
-
-        transition.classList.remove(
-          "active"
         );
-
-        navigating = false;
 
       }
     );
 
-  }
+
+
+  /* =======================================================
+     LOAD
+  ======================================================== */
+
+  window.addEventListener(
+    "load",
+    () => {
+
+      resetTransition();
+
+      updateProgress();
+
+    }
+  );
+
 
 })();
