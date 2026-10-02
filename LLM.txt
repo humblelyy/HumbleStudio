@@ -23,4 +23,4 @@ Public contact links are available on the main site.
 The `/admin` area is private and should not be indexed or described as public content.
 
 ## Last updated
-2026-10-01
+2026-10-02
