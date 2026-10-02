@@ -214,7 +214,7 @@
   }
 
   function editTool(id, data) {
-    const tool = data.find(item => item.id === id);
+    const tool = data.find(item => String(item.id) === String(id));
     if (!tool) return;
     editingId = id;
     existingImageUrl = tool.image_url || "";
@@ -236,7 +236,7 @@
 
   async function deleteTool(id, data) {
     if (!confirm("Delete this tool from HUMBLE STUDIO?")) return;
-    const tool = data.find(item => item.id === id);
+    const tool = data.find(item => String(item.id) === String(id));
     const { error } = await client.from("tools").delete().eq("id", id);
     if (error) {
       message(formMessage, error.message, "error");
