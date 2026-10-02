@@ -2,6 +2,32 @@
 
 
 /* ==========================================================
+   HUMBLE STUDIO PAGE LOADER
+========================================================== */
+
+(() => {
+
+  const loader = document.getElementById("humble-loader");
+  if (!loader) return;
+
+  const hideLoader = () => {
+    loader.classList.add("is-hidden");
+    window.setTimeout(() => loader.remove(), 260);
+  };
+
+  if (document.readyState === "complete") {
+    window.setTimeout(hideLoader, 120);
+  } else {
+    window.addEventListener("load", () => window.setTimeout(hideLoader, 120), { once: true });
+  }
+
+  // Never leave the page covered if a third-party resource is slow.
+  window.setTimeout(hideLoader, 2200);
+
+})();
+
+
+/* ==========================================================
    HUMBLE STUDIO
    PERFORMANCE + NAVIGATION
 ========================================================== */
@@ -63,7 +89,7 @@ const revealElements =
   );
 
 
-const toolLinks =
+let toolLinks =
   document.querySelectorAll(
     ".tool-card[data-tool]"
   );
@@ -593,7 +619,7 @@ function openTool(
   ---------------------------------------------- */
 
   const toolName =
-    link.dataset.tool ||
+    (link.dataset.tool || "HUMBLE TOOL").trim() ||
     "HUMBLE TOOL";
 
 
@@ -649,46 +675,64 @@ function openTool(
 }
 
 
-toolLinks.forEach(
-  link => {
+function bindToolLinks() {
 
-    link.addEventListener(
-      "click",
-      event => {
-
-        /*
-          Allow normal browser behaviour
-          for modifier clicks.
-        */
-
-        if (
-          event.button !== 0 ||
-          event.ctrlKey ||
-          event.metaKey ||
-          event.shiftKey ||
-          event.altKey
-        ) {
-
-          return;
-
-        }
-
-
-        event.preventDefault();
-
-
-        if (navigating) {
-          return;
-        }
-
-
-        openTool(
-          link
-        );
-
-      }
+  toolLinks =
+    document.querySelectorAll(
+      ".tool-card[data-tool]"
     );
 
+  toolLinks.forEach(
+    link => {
+
+      if (link.dataset.humbleBound === "true") {
+        return;
+      }
+
+      link.dataset.humbleBound = "true";
+
+      link.addEventListener(
+        "click",
+        event => {
+
+          /*
+            Allow normal browser behaviour
+            for modifier clicks.
+          */
+
+          if (
+            event.button !== 0 ||
+            event.ctrlKey ||
+            event.metaKey ||
+            event.shiftKey ||
+            event.altKey
+          ) {
+
+            return;
+
+          }
+
+          event.preventDefault();
+
+          if (navigating) {
+            return;
+          }
+
+          openTool(link);
+
+        }
+      );
+
+    }
+  );
+}
+
+bindToolLinks();
+
+document.addEventListener(
+  "humble:tools-rendered",
+  () => {
+    bindToolLinks();
   }
 );
 
@@ -813,3 +857,33 @@ document
 document.documentElement.classList.add(
   "js-ready"
 );
+
+
+/* ==========================================================
+   COOKIE NOTICE
+========================================================== */
+
+(() => {
+
+  const banner = document.getElementById("cookie-banner");
+  const accept = document.getElementById("cookie-accept");
+  const key = "humble_cookie_notice";
+
+  if (!banner || !accept) return;
+
+  try {
+    if (localStorage.getItem(key) !== "accepted") {
+      banner.hidden = false;
+    }
+  } catch {
+    banner.hidden = false;
+  }
+
+  accept.addEventListener("click", () => {
+    try {
+      localStorage.setItem(key, "accepted");
+    } catch {}
+    banner.hidden = true;
+  });
+
+})();

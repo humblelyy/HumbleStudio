@@ -1,0 +1,26 @@
+# HUMBLE STUDIO
+
+HUMBLE STUDIO is a creative tools website for editors and creators.
+
+## Main site
+https://humblestudio.vercel.app/
+
+## Public sections
+- Home
+- About
+- Tools
+- Contact
+- Privacy Policy
+- Terms & Conditions
+
+## Tools
+The public Tools section can contain HUMBLE-created tools. Published tool metadata is managed through the private admin panel.
+
+## Contact
+Public contact links are available on the main site.
+
+## Administrative area
+The `/admin` area is private and should not be indexed or described as public content.
+
+## Last updated
+2026-10-01

@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="description" content="HUMBLE STUDIO page not found.">
+  <link rel="icon" href="assets/logo/humble-logo.png">
+  <title>404 — HUMBLE STUDIO</title>
+  <style>
+    :root{
+      --paper:#f4efe7;
+      --ink:#080808;
+      --pink:#ff55c8;
+      --yellow:#ffd15a;
+      --cyan:#63d8d2;
+    }
+
+    *{box-sizing:border-box}
+
+    html,body{
+      width:100%;
+      min-height:100%;
+      margin:0;
+    }
+
+    body{
+      min-height:100vh;
+      overflow:hidden;
+      background:var(--paper);
+      color:var(--ink);
+      font-family:Arial,Helvetica,sans-serif;
+    }
+
+    .error-page{
+      min-height:100vh;
+      position:relative;
+      display:grid;
+      place-items:center;
+      padding:32px;
+      isolation:isolate;
+    }
+
+    .error-grid{
+      position:absolute;
+      inset:0;
+      z-index:-3;
+      opacity:.18;
+      background-image:
+        linear-gradient(var(--ink) 1px,transparent 1px),
+        linear-gradient(90deg,var(--ink) 1px,transparent 1px);
+      background-size:34px 34px;
+      mask-image:linear-gradient(to bottom,transparent,black 18%,black 82%,transparent);
+    }
+
+
+    .error-corner{
+      position:absolute;
+      top:28px;
+      left:28px;
+      z-index:5;
+    }
+
+    .back-link{
+      display:inline-flex;
+      align-items:center;
+      gap:9px;
+      padding:13px 17px;
+      border:3px solid var(--ink);
+      background:var(--yellow);
+      color:var(--ink);
+      text-decoration:none;
+      font-size:11px;
+      font-weight:900;
+      letter-spacing:.04em;
+      box-shadow:6px 6px 0 var(--ink);
+      transition:transform .16s ease,box-shadow .16s ease;
+    }
+
+    .back-link:hover,
+    .back-link:focus-visible{
+      transform:translate(3px,3px);
+      box-shadow:3px 3px 0 var(--ink);
+      outline:none;
+    }
+
+    .error-stack{
+      width:min(100%,1100px);
+      text-align:center;
+    }
+
+    .error-number{
+      margin:0;
+      font-size:clamp(150px,31vw,430px);
+      line-height:.7;
+      letter-spacing:-.09em;
+      font-weight:1000;
+      color:var(--ink);
+      text-shadow:12px 12px 0 var(--pink);
+      animation:numberIn .8s cubic-bezier(.16,1,.3,1) both;
+      user-select:none;
+    }
+
+    .error-label{
+      display:inline-block;
+      margin-top:70px;
+      padding:13px 19px;
+      border:3px solid var(--ink);
+      background:var(--ink);
+      color:var(--paper);
+      font-size:clamp(18px,3vw,34px);
+      font-weight:1000;
+      letter-spacing:.04em;
+      overflow:hidden;
+    }
+
+    .error-label span{
+      display:inline-block;
+      animation:textReveal 1.1s cubic-bezier(.16,1,.3,1) .25s both;
+    }
+
+    .error-copy{
+      max-width:620px;
+      margin:20px auto 0;
+      font-size:13px;
+      line-height:1.6;
+      font-weight:700;
+      animation:fadeUp .7s ease .5s both;
+    }
+
+    .error-code{
+      position:absolute;
+      right:28px;
+      bottom:25px;
+      font-size:9px;
+      font-weight:900;
+      letter-spacing:.08em;
+      opacity:.55;
+    }
+
+    @keyframes numberIn{
+      from{opacity:0;transform:scale(.72) rotate(-4deg)}
+      to{opacity:1;transform:scale(1) rotate(0)}
+    }
+
+    @keyframes textReveal{
+      from{opacity:0;transform:translateX(-80px);filter:blur(7px)}
+      50%{opacity:1}
+      to{opacity:1;transform:translateX(0);filter:blur(0)}
+    }
+
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(18px)}
+      to{opacity:1;transform:translateY(0)}
+    }
+
+
+    @media(max-width:600px){
+      body{overflow:auto}
+      .error-page{padding:20px}
+      .error-corner{top:18px;left:18px}
+      .back-link{font-size:9px;padding:10px 12px;box-shadow:4px 4px 0 var(--ink)}
+      .error-number{
+        font-size:clamp(125px,42vw,230px);
+        text-shadow:7px 7px 0 var(--pink);
+      }
+      .error-label{margin-top:55px;font-size:18px}
+      .error-copy{font-size:11px}
+      .error-code{right:18px;bottom:15px}
+    }
+
+    @media(prefers-reduced-motion:reduce){
+      .error-number,
+      .error-label span,
+      .error-copy{animation:none}
+    }
+  </style>
+</head>
+<body>
+  <main class="error-page">
+    <div class="error-grid" aria-hidden="true"></div>
+
+    <div class="error-corner">
+      <a class="back-link" href="index.html" aria-label="Back to HUMBLE STUDIO">
+        ← BACK TO HUMBLE STUDIO
+      </a>
+    </div>
+
+    <section class="error-stack" aria-labelledby="error-title">
+      <h1 class="error-number" aria-label="404">404</h1>
+      <div class="error-label" id="error-title">
+        <span>PAGE NOT FOUND</span>
+      </div>
+    </section>
+
+  </main>
+</body>
+</html>

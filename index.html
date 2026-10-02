@@ -10,10 +10,24 @@
     content="width=device-width, initial-scale=1, viewport-fit=cover"
   >
 
-  <meta
-    name="theme-color"
-    content="#f4efe7"
-  >
+  <meta name="theme-color" content="#f4efe7">
+  <meta name="color-scheme" content="light">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="HUMBLE STUDIO">
+  <meta name="application-name" content="HUMBLE STUDIO">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="description" content="HUMBLE STUDIO — practical tools, utilities and experiments for editors and creators.">
+  <link rel="canonical" href="https://humblestudio.vercel.app/">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="HUMBLE STUDIO — Tools for Editors & Creators">
+  <meta property="og:description" content="Practical tools, utilities and experiments built around editing and creative workflows.">
+  <meta property="og:url" content="https://humblestudio.vercel.app/">
+  <meta property="og:site_name" content="HUMBLE STUDIO">
+  <meta property="og:image" content="https://humblestudio.vercel.app/assets/logo/humble-banner.png">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="HUMBLE STUDIO — Tools for Editors & Creators">
+  <meta name="twitter:description" content="Practical tools, utilities and experiments for editors and creators.">
+  <meta name="twitter:image" content="https://humblestudio.vercel.app/assets/logo/humble-banner.png">
 
   <meta
     name="description"
@@ -38,10 +52,52 @@
 
   <title>HUMBLE STUDIO</title>
 
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "HUMBLE STUDIO",
+    "url": "https://humblestudio.vercel.app/",
+    "logo": "https://humblestudio.vercel.app/assets/logo/humble-logo-high.png",
+    "sameAs": [
+      "https://github.com/humblelyy",
+      "https://www.youtube.com/@humbleae",
+      "https://www.instagram.com/humble.edit/",
+      "https://discord.gg/X6aufPCjf7"
+    ]
+  }
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "HUMBLE STUDIO",
+    "url": "https://humblestudio.vercel.app/",
+    "description": "Practical tools, utilities and experiments for editors and creators."
+  }
+  </script>
+
 </head>
 
 
 <body>
+
+
+  <!-- =====================================================
+       HUMBLE STUDIO LOADER
+       Small 3x3 lattice loader. Removed automatically after
+       the page is ready. Keep this block minimal.
+  ====================================================== -->
+
+  <div class="humble-loader" id="humble-loader" role="status" aria-label="Loading HUMBLE STUDIO">
+    <span class="humble-loader-grid" aria-hidden="true">
+      <i></i><i></i><i></i>
+      <i></i><i></i><i></i>
+      <i></i><i></i><i></i>
+    </span>
+    <span class="sr-only">Loading HUMBLE STUDIO</span>
+  </div>
 
 
   <!-- =====================================================
@@ -633,6 +689,7 @@
           class="tool-card pink-card reveal"
           href="https://humblelyy.github.io/HumbleStudioTool/"
           data-tool="Humble Studio Tool"
+          data-platforms="Adobe After Effects,Adobe Premiere Pro,Windows,macOS"
         >
 
           <div class="tool-thumb">
@@ -697,6 +754,7 @@
           class="tool-card cyan-card reveal"
           href="https://humblelyy.github.io/HUMBLE-ae-Downgrader/"
           data-tool="Humble AE Downgrader"
+          data-platforms="Adobe After Effects,Windows,macOS"
         >
 
           <div class="tool-thumb">
@@ -862,21 +920,25 @@
         >
 
           <img
-            src="assets/social/email.svg"
-            alt=""
+            src="assets/social/gmail.png"
+            alt="Gmail 3D icon"
           >
 
-          <strong>
-            EMAIL
-          </strong>
+          <div class="social-card-content">
 
-          <small>
-            humbleae620@gmail.com
-          </small>
+            <strong>
+              GMAIL
+            </strong>
 
-          <b>
-            ↗
-          </b>
+            <small>
+              Email me at humbleae620@gmail.com
+            </small>
+
+            <b>
+              ↗
+            </b>
+
+          </div>
 
         </a>
 
@@ -890,21 +952,25 @@
         >
 
           <img
-            src="assets/social/discord.svg"
-            alt=""
+            src="assets/social/discord.png"
+            alt="Discord 3D icon"
           >
 
-          <strong>
-            DISCORD
-          </strong>
+          <div class="social-card-content">
 
-          <small>
-            Join the Humble community
-          </small>
+            <strong>
+              DISCORD
+            </strong>
 
-          <b>
-            ↗
-          </b>
+            <small>
+              Join my community
+            </small>
+
+            <b>
+              ↗
+            </b>
+
+          </div>
 
         </a>
 
@@ -918,21 +984,25 @@
         >
 
           <img
-            src="assets/social/youtube.svg"
-            alt=""
+            src="assets/social/youtube.png"
+            alt="YouTube 3D icon"
           >
 
-          <strong>
-            YOUTUBE
-          </strong>
+          <div class="social-card-content">
 
-          <small>
-            @humbleae
-          </small>
+            <strong>
+              YOUTUBE
+            </strong>
 
-          <b>
-            ↗
-          </b>
+            <small>
+              Please subscribe to my YouTube
+            </small>
+
+            <b>
+              ↗
+            </b>
+
+          </div>
 
         </a>
 
@@ -946,21 +1016,25 @@
         >
 
           <img
-            src="assets/social/instagram.svg"
-            alt=""
+            src="assets/social/instagram.png"
+            alt="Instagram 3D icon"
           >
 
-          <strong>
-            INSTAGRAM
-          </strong>
+          <div class="social-card-content">
 
-          <small>
-            @humble.edit
-          </small>
+            <strong>
+              INSTAGRAM
+            </strong>
 
-          <b>
-            ↗
-          </b>
+            <small>
+              Please follow me on Instagram
+            </small>
+
+            <b>
+              ↗
+            </b>
+
+          </div>
 
         </a>
 
@@ -974,21 +1048,25 @@
         >
 
           <img
-            src="assets/social/spotify.svg"
-            alt=""
+            src="assets/social/spotify.png"
+            alt="Spotify 3D icon"
           >
 
-          <strong>
-            SPOTIFY
-          </strong>
+          <div class="social-card-content">
 
-          <small>
-            Humble
-          </small>
+            <strong>
+              SPOTIFY
+            </strong>
 
-          <b>
-            ↗
-          </b>
+            <small>
+              Get my playlist &amp; listen to my songs
+            </small>
+
+            <b>
+              ↗
+            </b>
+
+          </div>
 
         </a>
 
@@ -1002,21 +1080,25 @@
         >
 
           <img
-            src="assets/social/github.svg"
-            alt=""
+            src="assets/social/github.png"
+            alt="GitHub 3D icon"
           >
 
-          <strong>
-            GITHUB
-          </strong>
+          <div class="social-card-content">
 
-          <small>
-            humblelyy
-          </small>
+            <strong>
+              GITHUB
+            </strong>
 
-          <b>
-            ↗
-          </b>
+            <small>
+              Explore my code &amp; projects
+            </small>
+
+            <b>
+              ↗
+            </b>
+
+          </div>
 
         </a>
 
@@ -1049,10 +1131,31 @@
     </div>
 
 
-    <span>
-      © 2026 HUMBLE STUDIO
-    </span>
+    <div class="footer-updated" tabindex="0">
+      <!-- =====================================================
+           EDIT THIS DATE WHENEVER YOU PUBLISH A NEW UPDATE.
+           Keep the datetime value and visible date in sync.
+      ====================================================== -->
+      <span class="footer-updated-label">LAST UPDATED</span>
+      <time datetime="2026-10-01">OCTOBER 1, 2026</time>
+      <span class="footer-copyright">© HUMBLE STUDIO 2026</span>
 
+      <!-- =====================================================
+           WHAT'S NEW — EDIT THIS BLOCK FOR FUTURE UPDATES.
+           Add the latest changes here; no separate HTML file needed.
+      ====================================================== -->
+      <div class="footer-update-popover" role="tooltip">
+        <strong>WHAT'S NEW</strong>
+        <span>Admin tool management, SEO files, legal pages, security setup, responsive fixes and the new Contact the Studio artwork.</span>
+      </div>
+    </div>
+
+
+
+    <nav class="footer-legal" aria-label="Legal">
+      <a href="privacy.html">PRIVACY</a>
+      <a href="terms.html">TERMS</a>
+    </nav>
 
     <strong class="footer-credit">
 
@@ -1072,8 +1175,35 @@
 
 
 
+
+  <aside
+    class="cookie-banner"
+    id="cookie-banner"
+    aria-label="Cookie notice"
+    hidden
+  >
+    <div>
+      <strong>COOKIE NOTICE</strong>
+      <p>
+        HUMBLE STUDIO uses essential browser storage for preferences such as
+        dismissing this notice. No advertising cookie is required for the site
+        to work.
+      </p>
+    </div>
+    <button type="button" id="cookie-accept">OK</button>
+  </aside>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabase-config.js"></script>
+  <script src="tools.js"></script>
   <script src="script.js"></script>
 
+
+  <noscript>
+    <div class="noscript-banner">
+      HUMBLE STUDIO works best with JavaScript enabled. The original tool links remain available above.
+    </div>
+  </noscript>
 </body>
 
 </html>

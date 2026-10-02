@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /admin/
+Sitemap: https://humblestudio.vercel.app/sitemap.xml

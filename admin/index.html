@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex,nofollow,noarchive">
+  <meta name="description" content="HUMBLE STUDIO private administration panel.">
+  <title>HUMBLE STUDIO — Admin</title>
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <main class="admin-shell">
+    <section id="login-view" class="admin-panel">
+      <p class="eyebrow">HUMBLE STUDIO / PRIVATE</p>
+      <h1>ADMIN</h1>
+      <p class="muted">Sign in to manage the published tool cards.</p>
+
+      <form id="login-form" class="form-stack">
+        <label>Email<input id="login-email" type="email" autocomplete="username" required></label>
+        <label>Password
+          <span class="password-wrap">
+            <input id="login-password" type="password" autocomplete="current-password" required>
+            <button type="button" id="toggle-password" aria-label="Show password">SHOW</button>
+          </span>
+        </label>
+        <button class="primary" type="submit">SIGN IN</button>
+        <p id="login-message" class="message" role="alert"></p>
+      </form>
+    </section>
+
+    <section id="dashboard-view" hidden>
+      <header class="admin-header">
+        <div>
+          <p class="eyebrow">HUMBLE STUDIO / ADMIN</p>
+          <h1>TOOLS</h1>
+        </div>
+        <button id="sign-out" class="secondary" type="button">SIGN OUT</button>
+      </header>
+
+      <div class="admin-grid">
+        <section class="admin-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">TOOL MANAGER</p>
+              <h2 id="form-title">ADD TOOL</h2>
+            </div>
+            <button id="cancel-edit" class="secondary" type="button" hidden>CANCEL</button>
+          </div>
+
+          <form id="tool-form" class="form-stack">
+            <input id="tool-id" type="hidden">
+
+            <label>
+              Tool image
+              <div id="drop-zone" class="drop-zone" tabindex="0" role="button" aria-label="Upload tool image">
+                <input id="tool-image" type="file" accept="image/png,image/jpeg,image/webp">
+                <strong>DROP IMAGE HERE</strong>
+                <span>or click to upload · PNG / JPG / WEBP · max 5 MB</span>
+                <img id="image-preview" alt="Selected tool preview" hidden>
+              </div>
+            </label>
+
+            <label>Headline<input id="tool-name" maxlength="80" required></label>
+            <label>Description<textarea id="tool-description" maxlength="260" rows="5" required></textarea></label>
+
+            <fieldset>
+              <legend>Works with</legend>
+              <div id="platform-list" class="check-grid" aria-live="polite"></div>
+              <div class="add-platform-row">
+                <input id="new-platform" type="text" maxlength="60" placeholder="Add another app or platform…">
+                <button id="add-platform" class="secondary" type="button">+ ADD PLATFORM</button>
+              </div>
+              <p class="field-note">Add a software or platform once and it becomes available as a checkbox for future tools.</p>
+            </fieldset>
+
+            <label>Redirect link<input id="tool-url" type="url" placeholder="https://..." required></label>
+
+            <div class="two-col">
+              <label>Display order<input id="tool-order" type="number" min="0" step="1" value="0"></label>
+              <label class="switch-row"><input id="tool-published" type="checkbox" checked> Published</label>
+            </div>
+
+            <button class="primary" type="submit" id="save-tool">PUBLISH TOOL</button>
+            <p id="form-message" class="message" role="alert"></p>
+          </form>
+        </section>
+
+        <section class="admin-panel">
+          <div class="panel-head">
+            <div>
+              <p class="eyebrow">LIVE DATA</p>
+              <h2>ALL TOOLS</h2>
+            </div>
+            <button id="refresh-tools" class="secondary" type="button">REFRESH</button>
+          </div>
+          <div id="tool-list" class="tool-list" aria-live="polite"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../supabase-config.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>
