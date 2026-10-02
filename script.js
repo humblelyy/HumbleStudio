@@ -889,151 +889,268 @@ document.documentElement.classList.add(
 })();
 
 /* ==========================================================
-   SEMI-NEOBRUTALIST NAV — ACTIVE SECTION
+   HUMBLE NAVBAR
+   Scroll direction + smart tool search + suggestions
 ========================================================== */
-(() => {
-  const navLinks = Array.from(document.querySelectorAll(".desktop-nav a[href^='#']"));
-  if (!navLinks.length || !("IntersectionObserver" in window)) return;
 
-  const sections = navLinks
-    .map(link => document.querySelector(link.getAttribute("href")))
-    .filter(Boolean);
-
-  const setActive = id => {
-    navLinks.forEach(link => {
-      const active = link.getAttribute("href") === `#${id}`;
-      link.classList.toggle("is-active", active);
-      if (active) link.setAttribute("aria-current", "page");
-      else link.removeAttribute("aria-current");
-    });
-  };
-
-  const observer = new IntersectionObserver(entries => {
-    const visible = entries
-      .filter(entry => entry.isIntersecting)
-      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-    if (visible[0]) setActive(visible[0].target.id);
-  }, {
-    root: null,
-    rootMargin: "-20% 0px -55% 0px",
-    threshold: [0.01, 0.1, 0.25, 0.5]
-  });
-
-  sections.forEach(section => observer.observe(section));
-
-  const initialId = window.location.hash.replace("#", "") || (sections[0] && sections[0].id);
-  if (initialId) setActive(initialId);
-})();
-
-/* ==========================================================
-   NAV SEARCH — SECTION SEARCH + UI CLICK SOUND
-========================================================== */
-(() => {
-  const form = document.querySelector(".nav-search");
-  const input = document.querySelector(".nav-search-input");
-  if (!form || !input) return;
-
-  const clickSound = new Audio("assets/sounds/nav-click.mp3");
-  clickSound.preload = "auto";
-  clickSound.volume = 0.42;
-
-  const playClick = () => {
-    try {
-      clickSound.currentTime = 0;
-      const playback = clickSound.play();
-      if (playback && typeof playback.catch === "function") {
-        playback.catch(() => {
-          // Audio is optional; navigation/search must still work.
-        });
-      }
-    } catch (_) {
-      // Audio is optional; navigation/search must still work.
-    }
-  };
-
-
-  form.addEventListener("pointerdown", event => {
-    if (event.target === form) playClick();
-  });
-
-  form.addEventListener("submit", event => {
-    event.preventDefault();
-    playClick();
-
-    const query = input.value.trim().toLowerCase();
-    if (!query) return;
-
-    const searchable = Array.from(document.querySelectorAll(
-      "main h1, main h2, main h3, main p, main .eyebrow, main .tool-card, main .social-card"
-    ));
-
-    const match = searchable.find(el =>
-      (el.textContent || "").toLowerCase().includes(query)
-    );
-
-    if (match) {
-      const target = match.closest("section, .tool-card, .social-card") || match;
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
-  });
-
-  document.querySelectorAll(".desktop-nav a, .mobile-menu a, .site-header .brand, .menu-btn")
-    .forEach(element => element.addEventListener("click", playClick));
-})();
-
-
-/* ==========================================================
-   NAVBAR SCROLL HIDE / SHOW
-========================================================== */
 (() => {
   const header = document.querySelector(".site-header");
+  const desktopSearchWrap = document.querySelector(".nav-search");
+  const desktopSearch = document.getElementById("nav-tool-search");
+  const desktopSuggestions = document.getElementById("nav-search-suggestions");
+  const mobileSearchWrap = document.querySelector(".mobile-search");
+  const mobileSearch = document.getElementById("mobile-tool-search");
+  const mobileSuggestions = document.getElementById("mobile-search-suggestions");
+
   if (!header) return;
 
-  let lastScrollY = window.scrollY;
-  let ticking = false;
+  /* ----------------------------------------------------------
+     NAVBAR SCROLL
+     UP = hide / DOWN = show / TOP = show
+  ---------------------------------------------------------- */
+  let lastScrollY = Math.max(0, window.scrollY || 0);
+  let scrollTicking = false;
+  const threshold = 5;
 
-  const updateNavbar = () => {
-    const currentScrollY = window.scrollY;
+  function updateNavbar() {
+    const current = Math.max(0, window.scrollY || 0);
+    const delta = current - lastScrollY;
 
-    // Always show the navbar at the very top.
-    if (currentScrollY <= 12) {
+    if (current <= 20) {
       header.classList.remove("nav-hidden");
-      lastScrollY = currentScrollY;
-      ticking = false;
-      return;
-    }
-
-    // Ignore tiny movement to prevent flickering.
-    const delta = currentScrollY - lastScrollY;
-
-    if (Math.abs(delta) < 6) {
-      ticking = false;
-      return;
-    }
-
-    if (delta > 0) {
-      // Scrolling down -> hide navbar.
+    } else if (delta > threshold) {
+      header.classList.remove("nav-hidden");
+    } else if (delta < -threshold) {
       header.classList.add("nav-hidden");
-    } else {
-      // Scrolling up -> show navbar.
-      header.classList.remove("nav-hidden");
+      if (typeof closeMobileMenu === "function") closeMobileMenu();
     }
 
-    lastScrollY = currentScrollY;
-    ticking = false;
-  };
+    lastScrollY = current;
+    scrollTicking = false;
+  }
 
   window.addEventListener("scroll", () => {
-    if (!ticking) {
-      window.requestAnimationFrame(updateNavbar);
-      ticking = true;
-    }
+    if (scrollTicking) return;
+    scrollTicking = true;
+    requestAnimationFrame(updateNavbar);
   }, { passive: true });
 
-  // Reset correctly when the page is restored.
-  window.addEventListener("pageshow", () => {
-    lastScrollY = window.scrollY;
-    header.classList.remove("nav-hidden");
+  /* ----------------------------------------------------------
+     SEARCH DATA + SUGGESTIONS
+  ---------------------------------------------------------- */
+  function getCards() {
+    return Array.from(document.querySelectorAll(".tool-card[data-tool]"));
+  }
+
+  function getCardData(card) {
+    return {
+      card,
+      name: (card.dataset.tool || card.querySelector("h3")?.textContent || "Tool").trim(),
+      platforms: (card.dataset.platforms || "").trim(),
+      description: (card.dataset.description || card.querySelector("p")?.textContent || "").trim(),
+      href: card.getAttribute("href") || ""
+    };
+  }
+
+  function searchable(data) {
+    return [data.name, data.platforms, data.description, data.href, data.card.textContent || ""]
+      .join(" ")
+      .toLowerCase();
+  }
+
+  function renderSuggestions(container, matches, query) {
+    if (!container) return;
+
+    container.replaceChildren();
+
+    if (!query) {
+      container.style.display = "none";
+      return;
+    }
+
+    const limited = matches.slice(0, 5);
+
+    if (!limited.length) {
+      const empty = document.createElement("div");
+      empty.className = "search-empty";
+      empty.textContent = "NO MATCHING TOOLS";
+      container.appendChild(empty);
+      container.style.display = "block";
+      return;
+    }
+
+    limited.forEach(data => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "search-suggestion";
+      button.setAttribute("role", "option");
+
+      const info = document.createElement("span");
+      const name = document.createElement("strong");
+      name.textContent = data.name;
+      info.appendChild(name);
+
+      if (data.platforms) {
+        const platforms = document.createElement("small");
+        platforms.textContent = data.platforms.split(",").slice(0, 3).join(" • ");
+        info.appendChild(platforms);
+      }
+
+      const arrow = document.createElement("span");
+      arrow.className = "search-suggestion-arrow";
+      arrow.textContent = "↗";
+
+      button.append(info, arrow);
+
+      button.addEventListener("click", () => {
+        if (data.card.hidden) data.card.hidden = false;
+        data.card.scrollIntoView({ behavior: "smooth", block: "center" });
+        closeSuggestions();
+        closeMobileMenu();
+      });
+
+      container.appendChild(button);
+    });
+
+    container.style.display = "block";
+  }
+
+  function closeSuggestions() {
+    [desktopSuggestions, mobileSuggestions].forEach(container => {
+      if (container) {
+        container.replaceChildren();
+        container.style.display = "none";
+      }
+    });
+    if (desktopSearchWrap) desktopSearchWrap.classList.remove("has-results");
+    if (mobileSearchWrap) mobileSearchWrap.classList.remove("has-results");
+  }
+
+  function searchTools(value, source) {
+    const query = String(value || "").trim().toLowerCase();
+    const data = getCards().map(getCardData);
+
+    const matches = data.filter(item => !query || searchable(item).includes(query));
+
+    data.forEach(item => {
+      const match = !query || searchable(item).includes(query);
+      item.card.hidden = !match;
+      item.card.classList.toggle("search-hidden", !match);
+    });
+
+    document.querySelectorAll(".coming-card").forEach(card => {
+      card.hidden = false;
+      card.classList.remove("search-hidden");
+    });
+
+    if (desktopSearch && source !== desktopSearch) desktopSearch.value = value;
+    if (mobileSearch && source !== mobileSearch) mobileSearch.value = value;
+
+    if (query) {
+      renderSuggestions(desktopSuggestions, matches, query);
+      renderSuggestions(mobileSuggestions, matches, query);
+      if (desktopSearchWrap) desktopSearchWrap.classList.add("has-results");
+      if (mobileSearchWrap) mobileSearchWrap.classList.add("has-results");
+    } else {
+      closeSuggestions();
+    }
+  }
+
+  function updateSearchState() {
+    if (!desktopSearchWrap || !desktopSearch) return;
+    desktopSearchWrap.classList.toggle(
+      "is-expanded",
+      document.activeElement === desktopSearch || desktopSearch.value.trim() !== ""
+    );
+  }
+
+  function bindSearch(input) {
+    if (!input) return;
+    input.addEventListener("input", event => {
+      searchTools(event.target.value, input);
+      updateSearchState();
+    });
+    input.addEventListener("focus", () => updateSearchState());
+    input.addEventListener("blur", () => {
+      window.setTimeout(() => {
+        if (!document.querySelector(".search-suggestions button:focus")) {
+          updateSearchState();
+        }
+      }, 120);
+    });
+  }
+
+  bindSearch(desktopSearch);
+  bindSearch(mobileSearch);
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "/" && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
+      const active = document.activeElement;
+      if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
+      if (desktopSearch) {
+        event.preventDefault();
+        desktopSearch.focus();
+      }
+      return;
+    }
+
+    if (event.key === "Escape") {
+      const active = document.activeElement;
+      if (active === desktopSearch || active === mobileSearch) {
+        if (desktopSearch) desktopSearch.value = "";
+        if (mobileSearch) mobileSearch.value = "";
+        searchTools("");
+        closeSuggestions();
+        if (desktopSearch) desktopSearch.blur();
+        if (mobileSearch) mobileSearch.blur();
+        updateSearchState();
+      }
+    }
   });
+
+  document.addEventListener("click", event => {
+    if (!event.target.closest(".nav-search, .mobile-search")) closeSuggestions();
+  });
+
+  document.addEventListener("humble:tools-rendered", () => {
+    const value = desktopSearch?.value || mobileSearch?.value || "";
+    searchTools(value);
+    updateSearchState();
+  });
+
+  updateSearchState();
+  searchTools("");
+
+  /* ----------------------------------------------------------
+     SUBTLE NAV CLICK SOUND
+     Uses Web Audio only after a real user gesture.
+  ---------------------------------------------------------- */
+  let audioContext = null;
+
+  function navClickSound() {
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtx) return;
+      if (!audioContext) audioContext = new AudioCtx();
+      if (audioContext.state === "suspended") audioContext.resume();
+
+      const oscillator = audioContext.createOscillator();
+      const gain = audioContext.createGain();
+      oscillator.type = "sine";
+      oscillator.frequency.setValueAtTime(720, audioContext.currentTime);
+      oscillator.frequency.exponentialRampToValueAtTime(480, audioContext.currentTime + 0.045);
+      gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.025, audioContext.currentTime + 0.006);
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.055);
+      oscillator.connect(gain);
+      gain.connect(audioContext.destination);
+      oscillator.start();
+      oscillator.stop(audioContext.currentTime + 0.06);
+    } catch (_) {}
+  }
+
+  document.querySelectorAll(".desktop-nav a, .mobile-menu a, .menu-btn, .brand").forEach(element => {
+    element.addEventListener("click", navClickSound, { passive: true });
+  });
+
 })();

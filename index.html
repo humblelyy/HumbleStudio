@@ -237,85 +237,85 @@
 
 
   <!-- =====================================================
-       HEADER
+       HUMBLE STUDIO NAVBAR
+       Floating neo-brutalist navigation
   ====================================================== -->
 
   <header class="site-header">
 
-    <a
-      class="brand"
-      href="#home"
-      aria-label="Humble Studio home"
-    >
+    <div class="nav-pill">
 
-      <img
-        src="assets/logo/humble-logo.png"
-        alt="Humble"
+      <a
+        class="brand"
+        href="#home"
+        aria-label="Humble Studio home"
       >
-
-      <span>
-        HUMBLE
-        <small>
-          STUDIO
-        </small>
-      </span>
-
-    </a>
-
-
-    <nav
-      class="desktop-nav"
-      aria-label="Main navigation"
-    >
-
-      <a href="#home">
-        HOME
-      </a>
-
-      <a href="#tools">
-        TOOL
-      </a>
-
-      <a href="#about">
-        ABOUT
-      </a>
-
-      <a href="#contact">
-        CONTACT
-      </a>
-
-    </nav>
-
-
-      <form class="nav-search" role="search" aria-label="Search site">
-        <svg class="nav-search-icon" viewBox="0 0 24 24" aria-hidden="true">
-          <circle cx="11" cy="11" r="6.5"></circle>
-          <path d="M16 16l5 5"></path>
-        </svg>
-        <input
-          class="nav-search-input"
-          type="search"
-          name="q"
-          placeholder="SEARCH..."
-          aria-label="Search"
-          autocomplete="off"
+        <img
+          src="assets/logo/humble-logo.png"
+          alt="Humble"
         >
-      </form>
 
-    <button
-      class="menu-btn"
-      type="button"
-      aria-label="Open menu"
-      aria-expanded="false"
-    >
+        <span>
+          HUMBLE
+          <small>STUDIO</small>
+        </span>
+      </a>
 
-      <span></span>
-      <span></span>
+      <nav
+        class="desktop-nav"
+        aria-label="Main navigation"
+      >
+        <a href="#home">HOME</a>
+        <a href="#about">ABOUT</a>
+        <a href="#tools">TOOLS</a>
+        <a href="#contact">CONTACT</a>
+      </nav>
 
-    </button>
+      <div class="nav-actions">
+
+        <label
+          class="nav-search"
+          for="nav-tool-search"
+          title="Search tools"
+        >
+          <span class="nav-search-icon" aria-hidden="true">⌕</span>
+
+          <input
+            type="search"
+            id="nav-tool-search"
+            placeholder="Search tools..."
+            autocomplete="off"
+            spellcheck="false"
+            aria-label="Search tools"
+            aria-autocomplete="list"
+            aria-controls="nav-search-suggestions"
+          >
+
+          <kbd aria-hidden="true">/</kbd>
+
+          <div
+            class="search-suggestions"
+            id="nav-search-suggestions"
+            role="listbox"
+            aria-label="Search suggestions"
+          ></div>
+        </label>
+
+        <button
+          class="menu-btn"
+          type="button"
+          aria-label="Open menu"
+          aria-expanded="false"
+        >
+          <span></span>
+          <span></span>
+        </button>
+
+      </div>
+
+    </div>
 
   </header>
-
 
 
   <!-- =====================================================
@@ -324,24 +324,34 @@
 
   <div class="mobile-menu">
 
-    <a href="#home">
-      HOME
-    </a>
+    <div class="mobile-search">
+      <span aria-hidden="true">⌕</span>
 
-    <a href="#about">
-      ABOUT
-    </a>
+      <input
+        type="search"
+        id="mobile-tool-search"
+        placeholder="Search tools..."
+        autocomplete="off"
+        spellcheck="false"
+        aria-label="Search tools"
+        aria-autocomplete="list"
+        aria-controls="mobile-search-suggestions"
+      >
 
-    <a href="#tools">
-      TOOLS
-    </a>
+      <div
+        class="search-suggestions mobile-suggestions"
+        id="mobile-search-suggestions"
+        role="listbox"
+        aria-label="Search suggestions"
+      ></div>
+    </div>
 
-    <a href="#contact">
-      CONTACT
-    </a>
+    <a href="#home">HOME</a>
+    <a href="#about">ABOUT</a>
+    <a href="#tools">TOOLS</a>
+    <a href="#contact">CONTACT</a>
 
   </div>
-
 
 
   <main>
