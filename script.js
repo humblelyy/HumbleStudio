@@ -890,267 +890,439 @@ document.documentElement.classList.add(
 
 /* ==========================================================
    HUMBLE NAVBAR
-   Scroll direction + smart tool search + suggestions
+   Scroll direction + smart tool search
 ========================================================== */
 
 (() => {
-  const header = document.querySelector(".site-header");
-  const desktopSearchWrap = document.querySelector(".nav-search");
-  const desktopSearch = document.getElementById("nav-tool-search");
-  const desktopSuggestions = document.getElementById("nav-search-suggestions");
-  const mobileSearchWrap = document.querySelector(".mobile-search");
-  const mobileSearch = document.getElementById("mobile-tool-search");
-  const mobileSuggestions = document.getElementById("mobile-search-suggestions");
 
-  if (!header) return;
+  const header =
+    document.querySelector(".site-header");
+
+  const desktopSearchWrap =
+    document.querySelector(".nav-search");
+
+  const desktopSearch =
+    document.getElementById("nav-tool-search");
+
+  const mobileSearch =
+    document.getElementById("mobile-tool-search");
+
+  if (!header) {
+    return;
+  }
+
 
   /* ----------------------------------------------------------
-     NAVBAR SCROLL
-     UP = hide / DOWN = show / TOP = show
+     SCROLL DIRECTION
+     UP   = hide
+     DOWN = show
+     TOP  = always show
   ---------------------------------------------------------- */
-  let lastScrollY = Math.max(0, window.scrollY || 0);
-  let scrollTicking = false;
-  const threshold = 5;
+
+  let lastScrollY =
+    Math.max(
+      0,
+      window.scrollY || 0
+    );
+
+  let scrollTicking =
+    false;
+
+  const scrollThreshold =
+    8;
+
 
   function updateNavbar() {
-    const current = Math.max(0, window.scrollY || 0);
-    const delta = current - lastScrollY;
 
-    if (current <= 20) {
-      header.classList.remove("nav-hidden");
-    } else if (delta > threshold) {
-      header.classList.remove("nav-hidden");
-    } else if (delta < -threshold) {
-      header.classList.add("nav-hidden");
-      if (typeof closeMobileMenu === "function") closeMobileMenu();
+    const currentScrollY =
+      Math.max(
+        0,
+        window.scrollY || 0
+      );
+
+    const difference =
+      currentScrollY -
+      lastScrollY;
+
+
+    if (
+      currentScrollY <= 20
+    ) {
+
+      header.classList.remove(
+        "nav-hidden"
+      );
+
+    } else if (
+      difference > scrollThreshold
+    ) {
+
+      /* Scrolling DOWN */
+      header.classList.remove(
+        "nav-hidden"
+      );
+
+    } else if (
+      difference < -scrollThreshold
+    ) {
+
+      /* Scrolling UP */
+      header.classList.add(
+        "nav-hidden"
+      );
+
+      /* Close the mobile menu when hiding */
+      if (
+        typeof closeMobileMenu ===
+        "function"
+      ) {
+
+        closeMobileMenu();
+
+      }
+
     }
 
-    lastScrollY = current;
-    scrollTicking = false;
+
+    lastScrollY =
+      currentScrollY;
+
+    scrollTicking =
+      false;
+
   }
 
-  window.addEventListener("scroll", () => {
-    if (scrollTicking) return;
-    scrollTicking = true;
-    requestAnimationFrame(updateNavbar);
-  }, { passive: true });
+
+  window.addEventListener(
+    "scroll",
+    () => {
+
+      if (scrollTicking) {
+        return;
+      }
+
+      scrollTicking =
+        true;
+
+      window.requestAnimationFrame(
+        updateNavbar
+      );
+
+    },
+    {
+      passive: true
+    }
+  );
+
 
   /* ----------------------------------------------------------
-     SEARCH DATA + SUGGESTIONS
+     SEARCH
+     Searches tool name, description, platforms,
+     URL and all visible card text.
   ---------------------------------------------------------- */
-  function getCards() {
-    return Array.from(document.querySelectorAll(".tool-card[data-tool]"));
+
+  function getToolCards() {
+
+    return Array.from(
+      document.querySelectorAll(
+        ".tool-card[data-tool]"
+      )
+    );
+
   }
 
-  function getCardData(card) {
-    return {
-      card,
-      name: (card.dataset.tool || card.querySelector("h3")?.textContent || "Tool").trim(),
-      platforms: (card.dataset.platforms || "").trim(),
-      description: (card.dataset.description || card.querySelector("p")?.textContent || "").trim(),
-      href: card.getAttribute("href") || ""
-    };
-  }
 
-  function searchable(data) {
-    return [data.name, data.platforms, data.description, data.href, data.card.textContent || ""]
-      .join(" ")
-      .toLowerCase();
-  }
+  function searchTools(
+    rawValue
+  ) {
 
-  function renderSuggestions(container, matches, query) {
-    if (!container) return;
+    const query =
+      String(
+        rawValue || ""
+      )
+        .trim()
+        .toLowerCase();
 
-    container.replaceChildren();
 
-    if (!query) {
-      container.style.display = "none";
-      return;
-    }
+    const cards =
+      getToolCards();
 
-    const limited = matches.slice(0, 5);
 
-    if (!limited.length) {
-      const empty = document.createElement("div");
-      empty.className = "search-empty";
-      empty.textContent = "NO MATCHING TOOLS";
-      container.appendChild(empty);
-      container.style.display = "block";
-      return;
-    }
+    cards.forEach(
+      card => {
 
-    limited.forEach(data => {
-      const button = document.createElement("button");
-      button.type = "button";
-      button.className = "search-suggestion";
-      button.setAttribute("role", "option");
+        const searchableText =
+          [
+            card.dataset.tool || "",
+            card.dataset.platforms || "",
+            card.dataset.description || "",
+            card.getAttribute("href") || "",
+            card.textContent || ""
+          ]
+            .join(" ")
+            .toLowerCase();
 
-      const info = document.createElement("span");
-      const name = document.createElement("strong");
-      name.textContent = data.name;
-      info.appendChild(name);
 
-      if (data.platforms) {
-        const platforms = document.createElement("small");
-        platforms.textContent = data.platforms.split(",").slice(0, 3).join(" • ");
-        info.appendChild(platforms);
+        const matches =
+          !query ||
+          searchableText.includes(
+            query
+          );
+
+
+        card.hidden =
+          !matches;
+
+        card.classList.toggle(
+          "search-hidden",
+          !matches
+        );
+
       }
+    );
 
-      const arrow = document.createElement("span");
-      arrow.className = "search-suggestion-arrow";
-      arrow.textContent = "↗";
 
-      button.append(info, arrow);
+    /*
+      Keep the permanent "Something More"
+      card visible even while searching.
+    */
 
-      button.addEventListener("click", () => {
-        if (data.card.hidden) data.card.hidden = false;
-        data.card.scrollIntoView({ behavior: "smooth", block: "center" });
-        closeSuggestions();
-        closeMobileMenu();
-      });
+    document
+      .querySelectorAll(
+        ".coming-card"
+      )
+      .forEach(
+        card => {
 
-      container.appendChild(button);
-    });
+          card.hidden =
+            false;
 
-    container.style.display = "block";
+          card.classList.remove(
+            "search-hidden"
+          );
+
+        }
+      );
+
   }
 
-  function closeSuggestions() {
-    [desktopSuggestions, mobileSuggestions].forEach(container => {
-      if (container) {
-        container.replaceChildren();
-        container.style.display = "none";
-      }
-    });
-    if (desktopSearchWrap) desktopSearchWrap.classList.remove("has-results");
-    if (mobileSearchWrap) mobileSearchWrap.classList.remove("has-results");
-  }
 
-  function searchTools(value, source) {
-    const query = String(value || "").trim().toLowerCase();
-    const data = getCards().map(getCardData);
+  function syncSearch(
+    value,
+    source
+  ) {
 
-    const matches = data.filter(item => !query || searchable(item).includes(query));
+    const nextValue =
+      String(
+        value || ""
+      );
 
-    data.forEach(item => {
-      const match = !query || searchable(item).includes(query);
-      item.card.hidden = !match;
-      item.card.classList.toggle("search-hidden", !match);
-    });
 
-    document.querySelectorAll(".coming-card").forEach(card => {
-      card.hidden = false;
-      card.classList.remove("search-hidden");
-    });
-
-    if (desktopSearch && source !== desktopSearch) desktopSearch.value = value;
-    if (mobileSearch && source !== mobileSearch) mobileSearch.value = value;
-
-    if (query) {
-      renderSuggestions(desktopSuggestions, matches, query);
-      renderSuggestions(mobileSuggestions, matches, query);
-      if (desktopSearchWrap) desktopSearchWrap.classList.add("has-results");
-      if (mobileSearchWrap) mobileSearchWrap.classList.add("has-results");
-    } else {
-      closeSuggestions();
+    if (
+      source !== desktopSearch &&
+      desktopSearch
+    ) {
+      desktopSearch.value =
+        nextValue;
     }
+
+
+    if (
+      source !== mobileSearch &&
+      mobileSearch
+    ) {
+      mobileSearch.value =
+        nextValue;
+    }
+
+
+    searchTools(
+      nextValue
+    );
+
   }
+
+
+  if (desktopSearch) {
+
+    desktopSearch.addEventListener(
+      "input",
+      event => {
+
+        syncSearch(
+          event.target.value,
+          desktopSearch
+        );
+
+      }
+    );
+
+  }
+
+
+  if (mobileSearch) {
+
+    mobileSearch.addEventListener(
+      "input",
+      event => {
+
+        syncSearch(
+          event.target.value,
+          mobileSearch
+        );
+
+      }
+    );
+
+  }
+
+
+  /*
+    Make the search field stay expanded
+    when it contains text.
+  */
 
   function updateSearchState() {
-    if (!desktopSearchWrap || !desktopSearch) return;
-    desktopSearchWrap.classList.toggle(
-      "is-expanded",
-      document.activeElement === desktopSearch || desktopSearch.value.trim() !== ""
-    );
-  }
 
-  function bindSearch(input) {
-    if (!input) return;
-    input.addEventListener("input", event => {
-      searchTools(event.target.value, input);
-      updateSearchState();
-    });
-    input.addEventListener("focus", () => updateSearchState());
-    input.addEventListener("blur", () => {
-      window.setTimeout(() => {
-        if (!document.querySelector(".search-suggestions button:focus")) {
-          updateSearchState();
-        }
-      }, 120);
-    });
-  }
-
-  bindSearch(desktopSearch);
-  bindSearch(mobileSearch);
-
-  document.addEventListener("keydown", event => {
-    if (event.key === "/" && !event.ctrlKey && !event.metaKey && !event.altKey && !event.shiftKey) {
-      const active = document.activeElement;
-      if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA" || active.isContentEditable)) return;
-      if (desktopSearch) {
-        event.preventDefault();
-        desktopSearch.focus();
-      }
+    if (!desktopSearchWrap || !desktopSearch) {
       return;
     }
 
-    if (event.key === "Escape") {
-      const active = document.activeElement;
-      if (active === desktopSearch || active === mobileSearch) {
-        if (desktopSearch) desktopSearch.value = "";
-        if (mobileSearch) mobileSearch.value = "";
-        searchTools("");
-        closeSuggestions();
-        if (desktopSearch) desktopSearch.blur();
-        if (mobileSearch) mobileSearch.blur();
-        updateSearchState();
+    desktopSearchWrap.classList.toggle(
+      "is-expanded",
+      document.activeElement === desktopSearch ||
+      desktopSearch.value.trim() !== ""
+    );
+
+  }
+
+
+  if (desktopSearch) {
+
+    desktopSearch.addEventListener(
+      "focus",
+      updateSearchState
+    );
+
+    desktopSearch.addEventListener(
+      "blur",
+      updateSearchState
+    );
+
+    desktopSearch.addEventListener(
+      "input",
+      updateSearchState
+    );
+
+  }
+
+
+  /*
+    "/" focuses the search.
+    ESC clears the search first.
+  */
+
+  document.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "/" &&
+        !event.ctrlKey &&
+        !event.metaKey &&
+        !event.altKey &&
+        !event.shiftKey
+      ) {
+
+        const active =
+          document.activeElement;
+
+        if (
+          active &&
+          (
+            active.tagName === "INPUT" ||
+            active.tagName === "TEXTAREA" ||
+            active.isContentEditable
+          )
+        ) {
+          return;
+        }
+
+
+        if (desktopSearch) {
+
+          event.preventDefault();
+
+          desktopSearch.focus();
+
+        }
+
+        return;
+
       }
+
+
+      if (
+        event.key === "Escape"
+      ) {
+
+        const active =
+          document.activeElement;
+
+        if (
+          active === desktopSearch ||
+          active === mobileSearch
+        ) {
+
+          if (desktopSearch) {
+            desktopSearch.value = "";
+          }
+
+          if (mobileSearch) {
+            mobileSearch.value = "";
+          }
+
+          searchTools("");
+
+          if (desktopSearch) {
+            desktopSearch.blur();
+          }
+
+          updateSearchState();
+
+        }
+
+      }
+
     }
-  });
+  );
 
-  document.addEventListener("click", event => {
-    if (!event.target.closest(".nav-search, .mobile-search")) closeSuggestions();
-  });
 
-  document.addEventListener("humble:tools-rendered", () => {
-    const value = desktopSearch?.value || mobileSearch?.value || "";
-    searchTools(value);
-    updateSearchState();
-  });
+  /*
+    If Supabase renders/re-renders tools later,
+    search again using the current query.
+  */
+
+  document.addEventListener(
+    "humble:tools-rendered",
+    () => {
+
+      const value =
+        desktopSearch
+          ? desktopSearch.value
+          : "";
+
+      searchTools(
+        value
+      );
+
+      updateSearchState();
+
+    }
+  );
+
 
   updateSearchState();
   searchTools("");
-
-  /* ----------------------------------------------------------
-     SUBTLE NAV CLICK SOUND
-     Uses Web Audio only after a real user gesture.
-  ---------------------------------------------------------- */
-  let audioContext = null;
-
-  function navClickSound() {
-    try {
-      const AudioCtx = window.AudioContext || window.webkitAudioContext;
-      if (!AudioCtx) return;
-      if (!audioContext) audioContext = new AudioCtx();
-      if (audioContext.state === "suspended") audioContext.resume();
-
-      const oscillator = audioContext.createOscillator();
-      const gain = audioContext.createGain();
-      oscillator.type = "sine";
-      oscillator.frequency.setValueAtTime(720, audioContext.currentTime);
-      oscillator.frequency.exponentialRampToValueAtTime(480, audioContext.currentTime + 0.045);
-      gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
-      gain.gain.exponentialRampToValueAtTime(0.025, audioContext.currentTime + 0.006);
-      gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.055);
-      oscillator.connect(gain);
-      gain.connect(audioContext.destination);
-      oscillator.start();
-      oscillator.stop(audioContext.currentTime + 0.06);
-    } catch (_) {}
-  }
-
-  document.querySelectorAll(".desktop-nav a, .mobile-menu a, .menu-btn, .brand").forEach(element => {
-    element.addEventListener("click", navClickSound, { passive: true });
-  });
 
 })();
