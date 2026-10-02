@@ -927,7 +927,7 @@ document.documentElement.classList.add(
 })();
 
 /* ==========================================================
-   NAV SEARCH — SECTION SEARCH + UI CLICK SOUND
+   NAV SEARCH — SMART SUGGESTIONS + GLOBAL UI CLICK SOUND
 ========================================================== */
 (() => {
   const form = document.querySelector(".nav-search");
@@ -942,44 +942,100 @@ document.documentElement.classList.add(
     try {
       clickSound.currentTime = 0;
       const playback = clickSound.play();
-      if (playback && typeof playback.catch === "function") {
-        playback.catch(() => {
-          // Audio is optional; navigation/search must still work.
-        });
-      }
-    } catch (_) {
-      // Audio is optional; navigation/search must still work.
-    }
+      if (playback && typeof playback.catch === "function") playback.catch(() => {});
+    } catch (_) {}
   };
 
+  /* Small search suggestion panel. */
+  const suggestionBox = document.createElement("div");
+  suggestionBox.className = "nav-search-suggestions";
+  suggestionBox.setAttribute("role", "listbox");
+  suggestionBox.hidden = true;
+  form.appendChild(suggestionBox);
 
-  form.addEventListener("pointerdown", event => {
-    if (event.target === form) playClick();
+  const getSearchItems = () => {
+    const tools = Array.from(document.querySelectorAll(".tool-card[data-tool]")).map(card => ({
+      label: card.dataset.tool || "Tool",
+      type: "TOOL",
+      href: card.getAttribute("href") || "",
+      element: card
+    }));
+
+    return [
+      { label: "Home", type: "SECTION", target: "#home" },
+      { label: "Tools", type: "SECTION", target: "#tools" },
+      { label: "About", type: "SECTION", target: "#about" },
+      { label: "Contact", type: "SECTION", target: "#contact" },
+      ...tools
+    ];
+  };
+
+  const hideSuggestions = () => {
+    suggestionBox.hidden = true;
+    suggestionBox.innerHTML = "";
+  };
+
+  const showSuggestions = query => {
+    const q = query.trim().toLowerCase();
+    if (!q) return hideSuggestions();
+
+    const matches = getSearchItems()
+      .filter(item => item.label.toLowerCase().includes(q))
+      .slice(0, 5);
+
+    if (!matches.length) {
+      suggestionBox.innerHTML = `<div class="search-empty">NO RESULTS FOR “${query.replace(/[<>]/g, "") }”</div>`;
+      suggestionBox.hidden = false;
+      return;
+    }
+
+    suggestionBox.innerHTML = matches.map((item, index) => `
+      <button type="button" class="search-suggestion" data-index="${index}">
+        <span>${item.label}</span>
+        <small>${item.type}</small>
+      </button>
+    `).join("");
+
+    suggestionBox.hidden = false;
+    suggestionBox.querySelectorAll(".search-suggestion").forEach((button, index) => {
+      button.addEventListener("click", () => {
+        const item = matches[index];
+        playClick();
+        hideSuggestions();
+        input.value = item.label;
+
+        if (item.type === "TOOL" && item.href) {
+          window.location.href = item.href;
+          return;
+        }
+
+        const target = document.querySelector(item.target);
+        if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
+      });
+    });
+  };
+
+  input.addEventListener("input", () => showSuggestions(input.value));
+  input.addEventListener("focus", () => {
+    if (input.value.trim()) showSuggestions(input.value);
   });
 
   form.addEventListener("submit", event => {
     event.preventDefault();
     playClick();
-
-    const query = input.value.trim().toLowerCase();
-    if (!query) return;
-
-    const searchable = Array.from(document.querySelectorAll(
-      "main h1, main h2, main h3, main p, main .eyebrow, main .tool-card, main .social-card"
-    ));
-
-    const match = searchable.find(el =>
-      (el.textContent || "").toLowerCase().includes(query)
-    );
-
-    if (match) {
-      const target = match.closest("section, .tool-card, .social-card") || match;
-      target.scrollIntoView({ behavior: "smooth", block: "center" });
-    }
+    showSuggestions(input.value);
   });
 
-  document.querySelectorAll(".desktop-nav a, .mobile-menu a, .site-header .brand, .menu-btn")
-    .forEach(element => element.addEventListener("click", playClick));
+  document.addEventListener("pointerdown", event => {
+    if (!form.contains(event.target)) hideSuggestions();
+  });
+
+  /* One sound handler for the whole main index, not only the navbar. */
+  document.addEventListener("click", event => {
+    const target = event.target.closest("a, button, [role='button']");
+    if (!target || suggestionBox.contains(target)) return;
+    playClick();
+  }, true);
 })();
 
 
