@@ -4006,3 +4006,310 @@ button {
   .legal-sections { grid-template-columns: 1fr; }
   .legal-card { box-shadow: 5px 5px 0 #080808; }
 }
+
+/* ==========================================================
+   SEMI-NEOBRUTALIST NAVBAR — HUMBLE STUDIO
+========================================================== */
+.site-header {
+  width: min(1380px, calc(100% - 28px));
+  min-height: 72px;
+  margin: 14px auto 0;
+  padding: 9px 10px 9px 18px;
+  background: rgba(250, 247, 241, .96);
+  border: 3px solid #080808;
+  border-radius: 16px;
+  box-shadow: 7px 7px 0 #080808;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  transition: transform .25s cubic-bezier(.16,1,.3,1), box-shadow .25s ease, background .25s ease;
+}
+.site-header:hover { box-shadow: 9px 9px 0 #080808; }
+.site-header .brand {
+  min-height: 48px;
+  padding: 5px 10px 5px 5px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  transition: transform .2s ease, background .2s ease, border-color .2s ease;
+}
+.site-header .brand:hover {
+  background: #ffd15a;
+  border-color: #080808;
+  transform: translate(-2px,-2px) rotate(-1deg);
+}
+.site-header .brand img { width: 42px; height: 42px; }
+.desktop-nav {
+  gap: 7px;
+  padding: 5px;
+  border: 2px solid #080808;
+  border-radius: 11px;
+  background: #080808;
+}
+.desktop-nav a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 40px;
+  padding: 0 17px;
+  border: 2px solid transparent;
+  border-radius: 7px;
+  color: #fff;
+  font-size: 11px;
+  letter-spacing: .08em;
+  transition: transform .2s cubic-bezier(.16,1,.3,1), background .2s ease, color .2s ease, border-color .2s ease, box-shadow .2s ease;
+}
+.desktop-nav a::after { display: none; }
+.desktop-nav a::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  margin-right: 7px;
+  border: 1px solid currentColor;
+  border-radius: 1px;
+  transform: rotate(45deg);
+  opacity: .7;
+  transition: transform .2s ease;
+}
+.desktop-nav a:hover::before,
+.desktop-nav a.is-active::before { transform: rotate(0deg) scale(1.15); }
+.desktop-nav a:hover,
+.desktop-nav a:focus-visible {
+  background: #ff55c8;
+  color: #080808;
+  border-color: #080808;
+  transform: translate(-2px,-2px);
+  box-shadow: 3px 3px 0 #fff;
+  outline: none;
+}
+.desktop-nav a.is-active {
+  background: #ffd15a;
+  color: #080808;
+  border-color: #080808;
+  box-shadow: 3px 3px 0 #fff;
+  transform: translate(-1px,-1px);
+}
+.menu-btn {
+  width: 48px;
+  height: 48px;
+  border: 3px solid #080808;
+  border-radius: 9px;
+  box-shadow: 4px 4px 0 #080808;
+  cursor: pointer;
+  transition: transform .2s ease, box-shadow .2s ease, background .2s ease;
+}
+.menu-btn:hover,
+.menu-btn:focus-visible {
+  background: #ff55c8;
+  transform: translate(-2px,-2px);
+  box-shadow: 6px 6px 0 #080808;
+  outline: none;
+}
+.menu-btn.active {
+  background: #ffd15a;
+  transform: translate(2px,2px);
+  box-shadow: 2px 2px 0 #080808;
+}
+.mobile-menu {
+  top: 94px;
+  left: 14px;
+  width: calc(100% - 28px);
+  border: 3px solid #080808;
+  border-radius: 12px;
+  box-shadow: 7px 7px 0 #080808;
+  overflow: hidden;
+  background: #080808;
+}
+.mobile-menu a {
+  padding: 18px 20px;
+  border-bottom: 2px solid #333;
+  transition: background .2s ease, color .2s ease, padding-left .2s ease;
+}
+.mobile-menu a:last-child { border-bottom: 0; }
+.mobile-menu a:hover,
+.mobile-menu a:focus-visible {
+  background: #ff55c8;
+  color: #080808;
+  padding-left: 26px;
+  outline: none;
+}
+@media (max-width: 900px) {
+  .site-header { width: min(calc(100% - 22px), 720px); margin-top: 11px; padding-left: 12px; }
+  .desktop-nav { gap: 4px; }
+  .desktop-nav a { padding: 0 12px; }
+}
+@media (max-width: 720px) {
+  .site-header {
+    width: calc(100% - 20px);
+    min-height: 62px;
+    margin-top: 10px;
+    padding: 6px 8px 6px 10px;
+    border-radius: 13px;
+    box-shadow: 5px 5px 0 #080808;
+  }
+  .site-header .brand { min-height: 44px; }
+  .site-header .brand img { width: 37px; height: 37px; }
+  .desktop-nav { display: none; }
+  .menu-btn { display: flex; }
+  .mobile-menu { top: 82px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header, .site-header .brand, .desktop-nav a, .menu-btn, .mobile-menu a { transition: none; }
+}
+
+\n/* ==========================================================
+   SEMI-NEOBRUTALIST NAV SEARCH
+   Compact icon that expands on hover/focus.
+========================================================== */
+.site-header {
+  transition: box-shadow .2s ease, background .2s ease;
+}
+
+.nav-search {
+  position: relative;
+  flex: 0 0 46px;
+  display: flex;
+  align-items: center;
+  width: 46px;
+  height: 46px;
+  margin-left: 10px;
+  padding: 0;
+  background: #fff;
+  border: 3px solid #080808;
+  border-radius: 9px;
+  box-shadow: 4px 4px 0 #080808;
+  overflow: hidden;
+  transition:
+    flex-basis .3s cubic-bezier(.16,1,.3,1),
+    width .3s cubic-bezier(.16,1,.3,1),
+    transform .2s ease,
+    box-shadow .2s ease,
+    background .2s ease;
+}
+
+.nav-search:hover,
+.nav-search:focus-within {
+  flex-basis: 188px;
+  width: 188px;
+  background: #ffd15a;
+  transform: translate(-2px,-2px);
+  box-shadow: 6px 6px 0 #080808;
+}
+
+.nav-search-icon {
+  flex: 0 0 40px;
+  width: 18px;
+  height: 18px;
+  margin-left: 0;
+  stroke: #080808;
+  stroke-width: 2.8;
+  fill: none;
+  pointer-events: none;
+}
+
+.nav-search-input {
+  flex: 1;
+  width: 0;
+  min-width: 0;
+  height: 100%;
+  margin-left: 5px;
+  padding: 0 9px 0 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #080808;
+  font: 900 11px/1 Arial, Helvetica, sans-serif;
+  letter-spacing: .08em;
+  opacity: 0;
+  transform: translateX(-7px);
+  transition: opacity .18s ease .06s, transform .25s cubic-bezier(.16,1,.3,1);
+}
+
+.nav-search:hover .nav-search-input,
+.nav-search:focus-within .nav-search-input {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.nav-search-input::placeholder { color: #080808; opacity: .62; }
+.nav-search-input::-webkit-search-cancel-button { cursor: pointer; }
+
+@media (max-width: 900px) {
+  .site-header { gap: 8px; }
+  .desktop-nav { gap: 4px; }
+  .desktop-nav a { padding: 0 12px; }
+  .nav-search { margin-left: 2px; }
+}
+
+@media (max-width: 720px) {
+  .site-header {
+    gap: 6px;
+    padding: 6px 8px 6px 10px;
+  }
+  .nav-search {
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    margin-left: auto;
+    margin-right: 0;
+    box-shadow: 3px 3px 0 #080808;
+  }
+  .nav-search:hover,
+  .nav-search:focus-within {
+    flex-basis: 154px;
+    width: 154px;
+    box-shadow: 5px 5px 0 #080808;
+  }
+  .nav-search-input { font-size: 10px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nav-search,
+  .nav-search-input { transition: none; }
+}
+
+/* ==========================================================
+   NAV SEARCH — FINAL POSITION
+   Keeps the search control visually separate from the nav.
+========================================================== */
+.site-header {
+  gap: 12px;
+}
+.desktop-nav {
+  margin-left: auto;
+}
+.nav-search {
+  flex-shrink: 0;
+  margin-left: 0;
+}
+@media (max-width: 900px) {
+  .site-header { gap: 8px; }
+  .nav-search { margin-left: 0; }
+}
+@media (max-width: 720px) {
+  .nav-search {
+    margin-left: auto;
+    margin-right: 0;
+  }
+}
+
+
+/* ==========================================================
+   NAVBAR SCROLL HIDE / SHOW
+   Hide on downward scroll, reveal on upward scroll.
+========================================================== */
+.site-header {
+  transition:
+    transform .28s cubic-bezier(.16, 1, .3, 1),
+    box-shadow .25s ease,
+    background .25s ease;
+  will-change: transform;
+}
+
+.site-header.nav-hidden {
+  transform: translateY(calc(-100% - 24px));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition: none;
+  }
+}

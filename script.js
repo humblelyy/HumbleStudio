@@ -887,3 +887,153 @@ document.documentElement.classList.add(
   });
 
 })();
+
+/* ==========================================================
+   SEMI-NEOBRUTALIST NAV — ACTIVE SECTION
+========================================================== */
+(() => {
+  const navLinks = Array.from(document.querySelectorAll(".desktop-nav a[href^='#']"));
+  if (!navLinks.length || !("IntersectionObserver" in window)) return;
+
+  const sections = navLinks
+    .map(link => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
+
+  const setActive = id => {
+    navLinks.forEach(link => {
+      const active = link.getAttribute("href") === `#${id}`;
+      link.classList.toggle("is-active", active);
+      if (active) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+  };
+
+  const observer = new IntersectionObserver(entries => {
+    const visible = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+    if (visible[0]) setActive(visible[0].target.id);
+  }, {
+    root: null,
+    rootMargin: "-20% 0px -55% 0px",
+    threshold: [0.01, 0.1, 0.25, 0.5]
+  });
+
+  sections.forEach(section => observer.observe(section));
+
+  const initialId = window.location.hash.replace("#", "") || (sections[0] && sections[0].id);
+  if (initialId) setActive(initialId);
+})();
+
+/* ==========================================================
+   NAV SEARCH — SECTION SEARCH + UI CLICK SOUND
+========================================================== */
+(() => {
+  const form = document.querySelector(".nav-search");
+  const input = document.querySelector(".nav-search-input");
+  if (!form || !input) return;
+
+  const clickSound = new Audio("assets/sounds/nav-click.mp3");
+  clickSound.preload = "auto";
+  clickSound.volume = 0.42;
+
+  const playClick = () => {
+    try {
+      clickSound.currentTime = 0;
+      const playback = clickSound.play();
+      if (playback && typeof playback.catch === "function") {
+        playback.catch(() => {
+          // Audio is optional; navigation/search must still work.
+        });
+      }
+    } catch (_) {
+      // Audio is optional; navigation/search must still work.
+    }
+  };
+
+
+  form.addEventListener("pointerdown", event => {
+    if (event.target === form) playClick();
+  });
+
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    playClick();
+
+    const query = input.value.trim().toLowerCase();
+    if (!query) return;
+
+    const searchable = Array.from(document.querySelectorAll(
+      "main h1, main h2, main h3, main p, main .eyebrow, main .tool-card, main .social-card"
+    ));
+
+    const match = searchable.find(el =>
+      (el.textContent || "").toLowerCase().includes(query)
+    );
+
+    if (match) {
+      const target = match.closest("section, .tool-card, .social-card") || match;
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+    }
+  });
+
+  document.querySelectorAll(".desktop-nav a, .mobile-menu a, .site-header .brand, .menu-btn")
+    .forEach(element => element.addEventListener("click", playClick));
+})();
+
+
+/* ==========================================================
+   NAVBAR SCROLL HIDE / SHOW
+========================================================== */
+(() => {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
+
+  let lastScrollY = window.scrollY;
+  let ticking = false;
+
+  const updateNavbar = () => {
+    const currentScrollY = window.scrollY;
+
+    // Always show the navbar at the very top.
+    if (currentScrollY <= 12) {
+      header.classList.remove("nav-hidden");
+      lastScrollY = currentScrollY;
+      ticking = false;
+      return;
+    }
+
+    // Ignore tiny movement to prevent flickering.
+    const delta = currentScrollY - lastScrollY;
+
+    if (Math.abs(delta) < 6) {
+      ticking = false;
+      return;
+    }
+
+    if (delta > 0) {
+      // Scrolling down -> hide navbar.
+      header.classList.add("nav-hidden");
+    } else {
+      // Scrolling up -> show navbar.
+      header.classList.remove("nav-hidden");
+    }
+
+    lastScrollY = currentScrollY;
+    ticking = false;
+  };
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(updateNavbar);
+      ticking = true;
+    }
+  }, { passive: true });
+
+  // Reset correctly when the page is restored.
+  window.addEventListener("pageshow", () => {
+    lastScrollY = window.scrollY;
+    header.classList.remove("nav-hidden");
+  });
+})();
