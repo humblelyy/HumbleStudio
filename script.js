@@ -889,440 +889,151 @@ document.documentElement.classList.add(
 })();
 
 /* ==========================================================
-   HUMBLE NAVBAR
-   Scroll direction + smart tool search
+   SEMI-NEOBRUTALIST NAV — ACTIVE SECTION
 ========================================================== */
-
 (() => {
+  const navLinks = Array.from(document.querySelectorAll(".desktop-nav a[href^='#']"));
+  if (!navLinks.length || !("IntersectionObserver" in window)) return;
 
-  const header =
-    document.querySelector(".site-header");
+  const sections = navLinks
+    .map(link => document.querySelector(link.getAttribute("href")))
+    .filter(Boolean);
 
-  const desktopSearchWrap =
-    document.querySelector(".nav-search");
+  const setActive = id => {
+    navLinks.forEach(link => {
+      const active = link.getAttribute("href") === `#${id}`;
+      link.classList.toggle("is-active", active);
+      if (active) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    });
+  };
 
-  const desktopSearch =
-    document.getElementById("nav-tool-search");
+  const observer = new IntersectionObserver(entries => {
+    const visible = entries
+      .filter(entry => entry.isIntersecting)
+      .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
 
-  const mobileSearch =
-    document.getElementById("mobile-tool-search");
+    if (visible[0]) setActive(visible[0].target.id);
+  }, {
+    root: null,
+    rootMargin: "-20% 0px -55% 0px",
+    threshold: [0.01, 0.1, 0.25, 0.5]
+  });
 
-  if (!header) {
-    return;
-  }
+  sections.forEach(section => observer.observe(section));
 
+  const initialId = window.location.hash.replace("#", "") || (sections[0] && sections[0].id);
+  if (initialId) setActive(initialId);
+})();
 
-  /* ----------------------------------------------------------
-     SCROLL DIRECTION
-     UP   = hide
-     DOWN = show
-     TOP  = always show
-  ---------------------------------------------------------- */
+/* ==========================================================
+   NAV SEARCH — SECTION SEARCH + UI CLICK SOUND
+========================================================== */
+(() => {
+  const form = document.querySelector(".nav-search");
+  const input = document.querySelector(".nav-search-input");
+  if (!form || !input) return;
 
-  let lastScrollY =
-    Math.max(
-      0,
-      window.scrollY || 0
-    );
+  const clickSound = new Audio("assets/sounds/nav-click.mp3");
+  clickSound.preload = "auto";
+  clickSound.volume = 0.42;
 
-  let scrollTicking =
-    false;
-
-  const scrollThreshold =
-    8;
-
-
-  function updateNavbar() {
-
-    const currentScrollY =
-      Math.max(
-        0,
-        window.scrollY || 0
-      );
-
-    const difference =
-      currentScrollY -
-      lastScrollY;
-
-
-    if (
-      currentScrollY <= 20
-    ) {
-
-      header.classList.remove(
-        "nav-hidden"
-      );
-
-    } else if (
-      difference > scrollThreshold
-    ) {
-
-      /* Scrolling DOWN */
-      header.classList.remove(
-        "nav-hidden"
-      );
-
-    } else if (
-      difference < -scrollThreshold
-    ) {
-
-      /* Scrolling UP */
-      header.classList.add(
-        "nav-hidden"
-      );
-
-      /* Close the mobile menu when hiding */
-      if (
-        typeof closeMobileMenu ===
-        "function"
-      ) {
-
-        closeMobileMenu();
-
+  const playClick = () => {
+    try {
+      clickSound.currentTime = 0;
+      const playback = clickSound.play();
+      if (playback && typeof playback.catch === "function") {
+        playback.catch(() => {
+          // Audio is optional; navigation/search must still work.
+        });
       }
-
+    } catch (_) {
+      // Audio is optional; navigation/search must still work.
     }
+  };
 
 
-    lastScrollY =
-      currentScrollY;
+  form.addEventListener("pointerdown", event => {
+    if (event.target === form) playClick();
+  });
 
-    scrollTicking =
-      false;
+  form.addEventListener("submit", event => {
+    event.preventDefault();
+    playClick();
 
-  }
+    const query = input.value.trim().toLowerCase();
+    if (!query) return;
 
+    const searchable = Array.from(document.querySelectorAll(
+      "main h1, main h2, main h3, main p, main .eyebrow, main .tool-card, main .social-card"
+    ));
 
-  window.addEventListener(
-    "scroll",
-    () => {
+    const match = searchable.find(el =>
+      (el.textContent || "").toLowerCase().includes(query)
+    );
 
-      if (scrollTicking) {
-        return;
-      }
-
-      scrollTicking =
-        true;
-
-      window.requestAnimationFrame(
-        updateNavbar
-      );
-
-    },
-    {
-      passive: true
+    if (match) {
+      const target = match.closest("section, .tool-card, .social-card") || match;
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
     }
-  );
+  });
+
+  document.querySelectorAll(".desktop-nav a, .mobile-menu a, .site-header .brand, .menu-btn")
+    .forEach(element => element.addEventListener("click", playClick));
+})();
 
 
-  /* ----------------------------------------------------------
-     SEARCH
-     Searches tool name, description, platforms,
-     URL and all visible card text.
-  ---------------------------------------------------------- */
+/* ==========================================================
+   NAVBAR SCROLL HIDE / SHOW
+========================================================== */
+(() => {
+  const header = document.querySelector(".site-header");
+  if (!header) return;
 
-  function getToolCards() {
+  let lastScrollY = window.scrollY;
+  let ticking = false;
 
-    return Array.from(
-      document.querySelectorAll(
-        ".tool-card[data-tool]"
-      )
-    );
+  const updateNavbar = () => {
+    const currentScrollY = window.scrollY;
 
-  }
-
-
-  function searchTools(
-    rawValue
-  ) {
-
-    const query =
-      String(
-        rawValue || ""
-      )
-        .trim()
-        .toLowerCase();
-
-
-    const cards =
-      getToolCards();
-
-
-    cards.forEach(
-      card => {
-
-        const searchableText =
-          [
-            card.dataset.tool || "",
-            card.dataset.platforms || "",
-            card.dataset.description || "",
-            card.getAttribute("href") || "",
-            card.textContent || ""
-          ]
-            .join(" ")
-            .toLowerCase();
-
-
-        const matches =
-          !query ||
-          searchableText.includes(
-            query
-          );
-
-
-        card.hidden =
-          !matches;
-
-        card.classList.toggle(
-          "search-hidden",
-          !matches
-        );
-
-      }
-    );
-
-
-    /*
-      Keep the permanent "Something More"
-      card visible even while searching.
-    */
-
-    document
-      .querySelectorAll(
-        ".coming-card"
-      )
-      .forEach(
-        card => {
-
-          card.hidden =
-            false;
-
-          card.classList.remove(
-            "search-hidden"
-          );
-
-        }
-      );
-
-  }
-
-
-  function syncSearch(
-    value,
-    source
-  ) {
-
-    const nextValue =
-      String(
-        value || ""
-      );
-
-
-    if (
-      source !== desktopSearch &&
-      desktopSearch
-    ) {
-      desktopSearch.value =
-        nextValue;
-    }
-
-
-    if (
-      source !== mobileSearch &&
-      mobileSearch
-    ) {
-      mobileSearch.value =
-        nextValue;
-    }
-
-
-    searchTools(
-      nextValue
-    );
-
-  }
-
-
-  if (desktopSearch) {
-
-    desktopSearch.addEventListener(
-      "input",
-      event => {
-
-        syncSearch(
-          event.target.value,
-          desktopSearch
-        );
-
-      }
-    );
-
-  }
-
-
-  if (mobileSearch) {
-
-    mobileSearch.addEventListener(
-      "input",
-      event => {
-
-        syncSearch(
-          event.target.value,
-          mobileSearch
-        );
-
-      }
-    );
-
-  }
-
-
-  /*
-    Make the search field stay expanded
-    when it contains text.
-  */
-
-  function updateSearchState() {
-
-    if (!desktopSearchWrap || !desktopSearch) {
+    // Always show the navbar at the very top.
+    if (currentScrollY <= 12) {
+      header.classList.remove("nav-hidden");
+      lastScrollY = currentScrollY;
+      ticking = false;
       return;
     }
 
-    desktopSearchWrap.classList.toggle(
-      "is-expanded",
-      document.activeElement === desktopSearch ||
-      desktopSearch.value.trim() !== ""
-    );
+    // Ignore tiny movement to prevent flickering.
+    const delta = currentScrollY - lastScrollY;
 
-  }
-
-
-  if (desktopSearch) {
-
-    desktopSearch.addEventListener(
-      "focus",
-      updateSearchState
-    );
-
-    desktopSearch.addEventListener(
-      "blur",
-      updateSearchState
-    );
-
-    desktopSearch.addEventListener(
-      "input",
-      updateSearchState
-    );
-
-  }
-
-
-  /*
-    "/" focuses the search.
-    ESC clears the search first.
-  */
-
-  document.addEventListener(
-    "keydown",
-    event => {
-
-      if (
-        event.key === "/" &&
-        !event.ctrlKey &&
-        !event.metaKey &&
-        !event.altKey &&
-        !event.shiftKey
-      ) {
-
-        const active =
-          document.activeElement;
-
-        if (
-          active &&
-          (
-            active.tagName === "INPUT" ||
-            active.tagName === "TEXTAREA" ||
-            active.isContentEditable
-          )
-        ) {
-          return;
-        }
-
-
-        if (desktopSearch) {
-
-          event.preventDefault();
-
-          desktopSearch.focus();
-
-        }
-
-        return;
-
-      }
-
-
-      if (
-        event.key === "Escape"
-      ) {
-
-        const active =
-          document.activeElement;
-
-        if (
-          active === desktopSearch ||
-          active === mobileSearch
-        ) {
-
-          if (desktopSearch) {
-            desktopSearch.value = "";
-          }
-
-          if (mobileSearch) {
-            mobileSearch.value = "";
-          }
-
-          searchTools("");
-
-          if (desktopSearch) {
-            desktopSearch.blur();
-          }
-
-          updateSearchState();
-
-        }
-
-      }
-
+    if (Math.abs(delta) < 6) {
+      ticking = false;
+      return;
     }
-  );
 
-
-  /*
-    If Supabase renders/re-renders tools later,
-    search again using the current query.
-  */
-
-  document.addEventListener(
-    "humble:tools-rendered",
-    () => {
-
-      const value =
-        desktopSearch
-          ? desktopSearch.value
-          : "";
-
-      searchTools(
-        value
-      );
-
-      updateSearchState();
-
+    if (delta > 0) {
+      // Scrolling down -> hide navbar.
+      header.classList.add("nav-hidden");
+    } else {
+      // Scrolling up -> show navbar.
+      header.classList.remove("nav-hidden");
     }
-  );
 
+    lastScrollY = currentScrollY;
+    ticking = false;
+  };
 
-  updateSearchState();
-  searchTools("");
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(updateNavbar);
+      ticking = true;
+    }
+  }, { passive: true });
 
+  // Reset correctly when the page is restored.
+  window.addEventListener("pageshow", () => {
+    lastScrollY = window.scrollY;
+    header.classList.remove("nav-hidden");
+  });
 })();
