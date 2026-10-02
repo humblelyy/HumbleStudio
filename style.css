@@ -302,8 +302,10 @@ button {
 
   border-bottom: 3px solid #ff55c8;
 
+  /* Fully hide the closed menu above the viewport.
+     The previous -110% could leave part of the menu visible on mobile. */
   transform:
-    translate3d(0, -110%, 0);
+    translate3d(0, calc(-100% - 100px), 0);
 
   transition:
     transform .35s cubic-bezier(.16, 1, .3, 1);
@@ -4149,7 +4151,13 @@ button {
   .site-header .brand img { width: 37px; height: 37px; }
   .desktop-nav { display: none; }
   .menu-btn { display: flex; }
-  .mobile-menu { top: 82px; }
+  .mobile-menu {
+    top: 82px;
+    left: 10px;
+    width: calc(100% - 20px);
+    max-height: calc(100vh - 96px);
+    overflow-y: auto;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .site-header, .site-header .brand, .desktop-nav a, .menu-btn, .mobile-menu a { transition: none; }
